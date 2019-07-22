@@ -1,5 +1,7 @@
 package de.berlin.vivepassion.controller
 
+import java.time.LocalDate
+
 import de.berlin.vivepassion.VivePassionStatistics
 import de.berlin.vivepassion.entities.Record
 
@@ -36,7 +38,7 @@ object StatisticsController {
           .setScale(2, BigDecimal.RoundingMode.HALF_UP)
         + " h")
     }
-    
+
     println("---------------------------------------------------------------------------------------------")
   }
 
@@ -61,6 +63,22 @@ object StatisticsController {
   def getLearningTimeAlone(list: List[Record], alone: Boolean): Double = {
     BigDecimal(list
       .filter(r => r.alone == alone)
+      .map(r => r.getSessionLength)
+      .sum / 60.0)
+      .setScale(2, BigDecimal.RoundingMode.HALF_UP)
+      .toDouble
+  }
+
+  /**
+    * Filters for all sessions which where held on the specific date and sums them up.
+    *
+    * @param list List of learn sessions (Record-Entity)
+    * @param date The date for which one wants the learning time.
+    * @return
+    */
+  def getLearningTimeForDate(list: List[Record], date: LocalDate): Double = {
+    BigDecimal(list
+      .filter(r => r.getDate.equals(date))
       .map(r => r.getSessionLength)
       .sum / 60.0)
       .setScale(2, BigDecimal.RoundingMode.HALF_UP)

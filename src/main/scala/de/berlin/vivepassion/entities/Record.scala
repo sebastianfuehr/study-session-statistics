@@ -15,11 +15,11 @@ import de.berlin.vivepassion.io.CSVLearnSessionFormat
   * @param startTime The time the learn session started.
   * @param endTime The time the learn session ended.
   * @param pause The amount of minutes which where used for regeneration, free time etc.
-  * @param remainingTime How many minutes more should have been used for learning but didn't.
   * @param alone Did one work alone during this learn session or with other students?
+  * @param comment What especially has been done during the study session?
   */
-case class Record(form: String, course: String, startTime: LocalDateTime,
-             endTime: LocalDateTime, pause: Int, remainingTime: Int, alone: Boolean) {
+case class Record(form: String, course: String, startTime: LocalDateTime, endTime: LocalDateTime,
+                  pause: Int, alone: Boolean, comment: String) {
 
   /**
     * @return The date of the learn session.
@@ -29,7 +29,7 @@ case class Record(form: String, course: String, startTime: LocalDateTime,
   /**
     * @return The length of the learn session in minutes.
     */
-  def getSessionLength: Long = startTime.until(endTime, ChronoUnit.MINUTES)
+  def getSessionLength: Long = startTime.until(endTime, ChronoUnit.MINUTES) - pause
 
 }
 object Record {
@@ -61,7 +61,7 @@ object Record {
     * @param date_time_format Format of the date and time columns.
     * @return New instance of Record.
     */
-  // TODO Methoden zum parsen bereitstellen
+  // TODO Methoden zum parsen bereitstellen (mit Fehlerüberprüfung)
   def fromLine(line: String, date_time_format: String, csv: CSVLearnSessionFormat): Record = {
     val recordString = line.split(",")
     val dateTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern(date_time_format)
@@ -74,14 +74,14 @@ object Record {
     var pause: Int = 0
     if (recordString(csv.pauseColumn).length != 0) pause = Integer.parseInt(recordString(4))
 
-    val remaining: Int = Integer.parseInt(recordString(csv.remainingTimeColumn))
-
     val isAlone: Boolean = getIsAloneBoolean(recordString(csv.aloneColumn), csv.aloneKeyWord)
 
     var course: String = ""
     if (recordString.length > 8) course = recordString(csv.courseColumn)
 
-    Record(recordString(csv.formColumn), course, startTime, endTime, pause, remaining, isAlone)
+    var comment: String = recordString(csv.commentColumn)
+
+    Record(recordString(csv.formColumn), course, startTime, endTime, pause, isAlone, comment)
   }
 
   /**

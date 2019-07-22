@@ -8,6 +8,9 @@ object VivePassionStatistics extends App {
   val learnSessions = CSVFileLoader.getListOfCSVFile
   var isInterrupted = false
 
+  /** Load all properties and prepare application launch. */
+  VPSConfiguration.init()
+
   // program circle
   println("VivePassion Statistics started")
   while(!isInterrupted) {

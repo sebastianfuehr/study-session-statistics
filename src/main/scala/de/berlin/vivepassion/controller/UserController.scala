@@ -102,9 +102,20 @@ object UserController {
     * @param options Optional parameters to manipulate the way the learn session get printed.
     */
   def listLearnSessions(options: Array[String]): Unit = {
+    if (options.length == 0) {
+      return
+    }
     options.head match {
-      case "--alone" => //TODO implement option alone for list command
-      case "all" => VivePassionStatistics.learnSessions.groupBy(r => r.getDate).foreach(r => println(r.toString()))
+      case "--alone" =>
+        VivePassionStatistics.learnSessions
+          .filter(r => r.alone)
+          .groupBy(r => r.getDate)
+          .foreach(r => println(r.toString()))
+      case "all" =>
+        VivePassionStatistics.learnSessions
+          .groupBy(r => r.getDate)
+          .foreach(r => println(r.toString()))
+      case "days" => RecordController.computeLearnDaysFromSession(VivePassionStatistics.learnSessions)// TODO implement printing of all study days
       case notKnown => unknownUserInputOption(notKnown)
     }
     if (options.length > 1) listLearnSessions(options.diff(options(0)::Nil))
