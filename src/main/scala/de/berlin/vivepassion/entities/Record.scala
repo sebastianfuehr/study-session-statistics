@@ -1,9 +1,9 @@
 package de.berlin.vivepassion.entities
 
 import java.io.FileInputStream
-import java.time.{LocalDate, LocalDateTime}
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
+import java.time.{LocalDate, LocalDateTime}
 import java.util.Properties
 
 import de.berlin.vivepassion.io.CSVLearnSessionFormat
@@ -17,19 +17,28 @@ import de.berlin.vivepassion.io.CSVLearnSessionFormat
   * @param pause The amount of minutes which where used for regeneration, free time etc.
   * @param alone Did one work alone during this learn session or with other students?
   * @param comment What especially has been done during the study session?
+  * @param id Identifier of the specific record entity.
   */
 case class Record(form: String, course: String, startTime: LocalDateTime, endTime: LocalDateTime,
-                  pause: Int, alone: Boolean, comment: String) {
+                  pause: Int, alone: Boolean, comment: String, id: Long) {
 
   /**
     * @return The date of the learn session.
     */
   def getDate: LocalDate = startTime.toLocalDate
+  def getDateString: String = startTime.format(Record.dateFormatter)
+
+  def getStartTimeString: String = startTime.format(Record.timeFormatter)
+  def getEndTimeString: String = endTime.format(Record.timeFormatter)
 
   /**
     * @return The length of the learn session in minutes.
     */
   def getSessionLength: Long = startTime.until(endTime, ChronoUnit.MINUTES) - pause
+
+  override def toString: String = {
+    s"[$id] $getDateString from $getStartTimeString to $getEndTimeString -> ${getSessionLength}m"
+  }
 
 }
 object Record {
@@ -39,20 +48,31 @@ object Record {
   var properties: Properties = new Properties()
   properties.load(new FileInputStream(PROPERTIES_PATH))
 
+  /*
+   * Initialisation of different formats for date and time for the record entity.
+   */
+  val timeFormatStr: String = properties.getProperty("default_time_format")
+  val dateFormatStr: String = properties.getProperty("default_date_format")
+  val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern(dateFormatStr)
+  val timeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern(timeFormatStr)
+  val dateTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern(
+    s"$dateFormatStr'T'$timeFormatStr"
+  )
+
   /**
     * This methods requests the default date and time format strings from the vivepassionstats.properties and
     * calls the overloaded fromLine(...) method with these global default values.
     * @param line String to parse to a new line.
     * @return New instance of Record.
     */
-  def fromLine(line: String): Record = {
+  def fromLine(line: String, id: Long): Record = {
     val default_date_time_format = (
         properties.getProperty("default_date_format")
         +"'T'"
         +properties.getProperty("default_time_format")
       )
     val default_csv_learn_session_file_format = new CSVLearnSessionFormat(',')
-    fromLine(line, default_date_time_format, default_csv_learn_session_file_format)
+    fromLine(line, default_date_time_format, default_csv_learn_session_file_format, id)
   }
 
   /**
@@ -62,7 +82,7 @@ object Record {
     * @return New instance of Record.
     */
   // TODO Methoden zum parsen bereitstellen (mit Fehlerüberprüfung)
-  def fromLine(line: String, date_time_format: String, csv: CSVLearnSessionFormat): Record = {
+  def fromLine(line: String, date_time_format: String, csv: CSVLearnSessionFormat, id: Long): Record = {
     val recordString = line.split(",")
     val dateTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern(date_time_format)
 
@@ -81,7 +101,7 @@ object Record {
 
     var comment: String = recordString(csv.commentColumn)
 
-    Record(recordString(csv.formColumn), course, startTime, endTime, pause, isAlone, comment)
+    Record(recordString(csv.formColumn), course, startTime, endTime, pause, isAlone, comment, id)
   }
 
   /**

@@ -4,9 +4,6 @@ import java.time.format.DateTimeFormatter
 import java.util.Properties
 import java.io.FileInputStream
 
-class VPSConfiguration {
-
-}
 object VPSConfiguration {
 
   /** Path of the 'vivepassionstats.properties' file. */
@@ -28,6 +25,15 @@ object VPSConfiguration {
       + "'T'"
       + properties.getProperty("default_time_format")
     )
+  }
+
+  /**
+    * Prints all options of the "vivepassionstats.properties" file on the console.
+    */
+  def printApplicationProperties: Unit = {
+    val props = new Properties()
+    props.load(new FileInputStream("resources/vivepassionstats.properties"))
+    props.forEach((k, v) => println(k+":\t"+v))
   }
 
 }

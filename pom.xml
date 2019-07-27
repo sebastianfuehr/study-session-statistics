@@ -41,7 +41,7 @@
         <dependency>
             <groupId>com.github.scopt</groupId>
             <artifactId>scopt_2.12</artifactId>
-            <version>4.0.0-RC1</version>
+            <version>3.7.0</version>
         </dependency>
     </dependencies>
 

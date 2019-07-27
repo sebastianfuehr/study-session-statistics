@@ -18,7 +18,7 @@ object CSVFileLoader {
     var resultList: List[Record] = List.empty
     var index = 0
     for (line <- bufferedSource.getLines) { // read each line of the csv file
-      if (index != 0) resultList +:= Record.fromLine(line)
+      if (index != 0) resultList +:= Record.fromLine(line, index)
       index += 1
     }
     bufferedSource.close

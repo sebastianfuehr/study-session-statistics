@@ -13,7 +13,7 @@ class RecordTests extends FunSuite with BeforeAndAfter {
                     "Prog2",
                     LocalDateTime.parse("2007-12-03T15:30:00"),
                     LocalDateTime.parse("2007-12-03T16:15:00"),
-                    7, true, " ")
+                    7, true, " ", 0)
   }
 
   test ("test record getDate method") {
@@ -30,7 +30,7 @@ class RecordTests extends FunSuite with BeforeAndAfter {
   }
 
   test ("test record mapping from string to record instance") {
-    val temp = Record.fromLine("12/03/2007,Di,15:30,16:15,7,Hausaufgaben machen,Allein,Prog2, ")
+    val temp = Record.fromLine("12/03/2007,Di,15:30,16:15,7,Hausaufgaben machen,Allein,Prog2, ", 0)
     assert(record == temp)
   }
 
