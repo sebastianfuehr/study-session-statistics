@@ -15,6 +15,7 @@
         <java.version>1.8</java.version>
         <scala.version>2.12.8</scala.version>
         <encoding>UTF-8</encoding>
+        <assembly.version>3.1.1</assembly.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
     </properties>
@@ -35,6 +36,12 @@
             <artifactId>scalatest_2.12</artifactId>
             <version>3.0.5</version>
             <scope>test</scope>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.github.scopt/scopt -->
+        <dependency>
+            <groupId>com.github.scopt</groupId>
+            <artifactId>scopt_2.12</artifactId>
+            <version>4.0.0-RC1</version>
         </dependency>
     </dependencies>
 

@@ -20,12 +20,6 @@ object RecordController {
   var properties: Properties = new Properties()
   properties.load(new FileInputStream(PROPERTIES_PATH))
 
-  def startNewSemster(): Boolean = { // TODO implement method
-    val term: String = UserController.getUserInput("Which term is the new semester?")
-
-    return false;
-  }
-
   /**
     * Prompts the user for input in form of 'property=value' and tries to map these values to a new instance
     * of Record.

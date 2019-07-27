@@ -1,5 +1,0 @@
-Here is a list of commands which can be helpful:
-stats
-exit        -- close the application
-help        -- shows this message
-options     -- lists all application settings
