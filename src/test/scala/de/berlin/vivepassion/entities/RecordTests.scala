@@ -25,10 +25,6 @@ class RecordTests extends FunSuite with BeforeAndAfter {
   }
 
   // tests for record companion object ------------------------------------------------------------
-  test ("test record application properties path") {
-    assert(Record.PROPERTIES_PATH == "resources/vivepassionstats.properties")
-  }
-
   test ("test record mapping from string to record instance") {
     val temp = Record.fromLine("12/03/2007,Di,15:30,16:15,7,Hausaufgaben machen,Allein,Prog2, ", 0)
     assert(record == temp)

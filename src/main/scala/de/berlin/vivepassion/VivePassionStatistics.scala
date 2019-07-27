@@ -1,7 +1,7 @@
 package de.berlin.vivepassion
 
 import de.berlin.vivepassion.controller.{RecordController, StatisticsController}
-import de.berlin.vivepassion.io.CSVFileLoader
+import de.berlin.vivepassion.io.{CSVFileLoader, SQLiteJDBCDriverConnection}
 import scopt.OptionParser
 
 /**
@@ -9,11 +9,10 @@ import scopt.OptionParser
   */
 object VivePassionStatistics extends App {
 
-  val learnSessions = CSVFileLoader.getListOfCSVFile
-  var isInterrupted = false
+  val learnSessions = CSVFileLoader.getListOfCSVFile("./src/main/resources/tables/Studiumsorganisation_Semester_3.csv")
 
-  /** Load all properties and prepare application launch. */
-  VPSConfiguration.init()
+  var debugMode = false
+  var isInterrupted = false
 
   val parser = new OptionParser[Config]("VivePassion Statistics") {
       head("vpstats", "0.1")
@@ -37,6 +36,10 @@ object VivePassionStatistics extends App {
         .action((_, config) => config.copy(alone = false))
         .text("total study time in a group")
 
+      opt[Unit]("debug")
+          .action((_, config) => config.copy(debug = true))
+          .text("activate debug messages")
+
       // commands
       note("\nAvailable commands plus options:\n")
 
@@ -53,9 +56,11 @@ object VivePassionStatistics extends App {
         )
 
       cmd("start")
+        .action((_, config) => config.copy(mode = "start"))
         .text("start a new study session")
 
       cmd("stop")
+        .action((_, config) => config.copy(mode = "stop"))
         .text("stop the current study session.\n " +
           "The application will ask for the form of learning and the course.")
 
@@ -73,33 +78,47 @@ object VivePassionStatistics extends App {
 
   }
 
+  debugMode = parser.parse(args, Config()).get.debug // enabling debug mode
+
+  /** Load all properties and prepare application launch. */
+  VPSConfiguration.init()
+
+  SQLiteJDBCDriverConnection.connect()
+
   parser.parse(args, Config()) match {
-    case config@Some(Config("analyse", _, _, _ , _, _, _, _, _)) =>    // analysing mode (default)
+    // parse command
+    case config@Some(Config(_, "analyse", _, _, _ , _, _, _, _, _)) =>    // analysing mode (default)
       config match {
-        case Some(Config(_, aloneBoolean, _, _, _ , _, _, _, _)) =>
+        case Some(Config(_, _, aloneBoolean, _, _, _ , _, _, _, _)) =>
           println(s"Learn time ${if (aloneBoolean) "alone" else "in a group"}: " +
             s"${StatisticsController.getLearningTimeAlone(learnSessions, aloneBoolean)} h")
-        case Some(Config(_, _, _, _ , _, _, _, _, _)) => StatisticsController.printAllStats()
+        case Some(Config(_, _, _, _, _ , _, _, _, _, _)) => StatisticsController.printAllStats()
       }
 
 
-    case config@Some(Config("list", _, _, _ , _, _, _, _, _)) =>       // list tables mode
+    case config@Some(Config(_, "list", _, _, _ , _, _, _, _, _)) =>       // list tables mode
       config match {
         // print all study sessions done alone // TODO implement method to print study sessions grouped by time interval and for alone or in a group
-        case Some(Config(_, true, _, _ , _, _, _, _, _)) =>
+        case Some(Config(_, _, true, _, _ , _, _, _, _, _)) =>
           println("Study sessions alone:")
           VivePassionStatistics.learnSessions
             .filter(r => r.alone)
             .sortBy(r => r.id)
             .foreach(r => println(r.toString()))
         // print all study sessions grouped by days
-        case Some(Config(_, _, GroupByIntervals.Day, _ , _, _, _, _, _)) =>
+        case Some(Config(_, _, _, GroupByIntervals.Day, _ , _, _, _, _, _)) =>
           RecordController.computeLearnDaysFromSession(VivePassionStatistics.learnSessions)// TODO implement printing of all study days
         // print all study sessions
-        case Some(Config(_, _, _, _ , _, _, _, _, _)) => VivePassionStatistics.learnSessions
+        case Some(Config(_, _, _, _, _ , _, _, _, _, _)) => VivePassionStatistics.learnSessions
                                       .groupBy(r => r.getDate)
                                       .foreach(r => println(r.toString()))
       }
+
+
+    case Some(Config(_, "start", _, _, _ , _, _, _, _, _)) =>
+
+
+    case Some(Config(_, "stop", _, _, _ , _, _, _, _, _)) =>
 
 
     case _ => println("Command not known.")

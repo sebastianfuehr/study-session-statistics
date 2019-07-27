@@ -7,7 +7,7 @@ import java.io.FileInputStream
 object VPSConfiguration {
 
   /** Path of the 'vivepassionstats.properties' file. */
-  val PROPERTIES_PATH = "resources/vivepassionstats.properties"
+  val PROPERTIES_PATH = "./src/main/resources/vivepassionstats.properties"
   val properties: Properties = new Properties()
 
   /**
@@ -32,7 +32,7 @@ object VPSConfiguration {
     */
   def printApplicationProperties: Unit = {
     val props = new Properties()
-    props.load(new FileInputStream("resources/vivepassionstats.properties"))
+    props.load(new FileInputStream(PROPERTIES_PATH))
     props.forEach((k, v) => println(k+":\t"+v))
   }
 

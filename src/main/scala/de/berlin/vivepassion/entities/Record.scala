@@ -6,6 +6,7 @@ import java.time.temporal.ChronoUnit
 import java.time.{LocalDate, LocalDateTime}
 import java.util.Properties
 
+import de.berlin.vivepassion.VPSConfiguration
 import de.berlin.vivepassion.io.CSVLearnSessionFormat
 
 /**
@@ -43,10 +44,8 @@ case class Record(form: String, course: String, startTime: LocalDateTime, endTim
 }
 object Record {
 
-  val PROPERTIES_PATH = "resources/vivepassionstats.properties"
-
   var properties: Properties = new Properties()
-  properties.load(new FileInputStream(PROPERTIES_PATH))
+  properties.load(new FileInputStream(VPSConfiguration.PROPERTIES_PATH))
 
   /*
    * Initialisation of different formats for date and time for the record entity.

@@ -13,20 +13,12 @@ object RecordController {
   var properties: Properties = new Properties()
   properties.load(new FileInputStream(VPSConfiguration.PROPERTIES_PATH))
 
-  /**
-    * Prompts the user for input in form of 'property=value' and tries to map these values to a new instance
-    * of Record.
-    * @param callParams String array of key-value-pairs to be cast into a new Record instance.
-    */
-  def addNewLearnSessionDialog(callParams: Array[String]): Unit = { // TODO implement method
 
-  }
 
-  /**
-    * TODO Am I important?
+   /**
     * @param list
     */
-  def computeLearnDaysFromSession(list: List[Record]) = {
+  def computeLearnDaysFromSession(list: List[Record]) = { // TODO Am I important?
     val groupedList = list.groupBy(r => r.getDate)
     val listBuffer: ListBuffer[LearnDay] = ListBuffer.empty
     for (tuple <- groupedList) {

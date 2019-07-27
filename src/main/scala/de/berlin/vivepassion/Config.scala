@@ -5,6 +5,7 @@ import java.time.LocalDateTime
 import de.berlin.vivepassion.GroupByIntervals.GroupByIntervals
 
 case class Config(
+                   debug: Boolean = false,
                    mode: String = "analyse",
                    alone: Boolean = true,
                    groupBy: GroupByIntervals = GroupByIntervals.Day,
