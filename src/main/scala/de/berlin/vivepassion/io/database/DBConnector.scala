@@ -25,7 +25,7 @@ object DBConnector {
   def getStudyForms: List[String] = {
     val sqlStatement = "SELECT name FROM StudyForm"
     val result: ResultSet = connect.createStatement.executeQuery(sqlStatement)
-
+    null
   }
 
 }

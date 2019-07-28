@@ -1,7 +1,7 @@
 package de.berlin.vivepassion
 
 import de.berlin.vivepassion.controller.{RecordController, StatisticsController}
-import de.berlin.vivepassion.io.{CSVFileLoader, SQLiteJDBCDriverConnection}
+import de.berlin.vivepassion.io.CSVFileLoader
 import scopt.OptionParser
 
 /**
@@ -81,8 +81,6 @@ object VivePassionStatistics extends App {
   debugMode = parser.parse(args, Config()).get.debug // enabling/disabling debug mode
 
   VPSConfiguration.init() // load all properties and prepare application launch.
-
-  SQLiteJDBCDriverConnection.connect() // connect to the sqlite database
 
   parser.parse(args, Config()) match { // parse the user input
 
