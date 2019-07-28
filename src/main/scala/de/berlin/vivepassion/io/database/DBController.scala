@@ -31,8 +31,8 @@ class DBController(dbUrl: String) {
       "id INTEGER PRIMARY KEY, \n" +
       "form TEXT, \n" +
       "course TEXT, \n" +
-      "start_time TEXT, \n" +
-      "end_time TEXT, \n" +
+      "start_time REAL, \n" +
+      "end_time REAL, \n" +
       "pause INTEGER, \n" +
       "alone INTEGER NOT NULL, \n" +
       "comment TEXT\n" +
@@ -47,8 +47,14 @@ class DBController(dbUrl: String) {
     connect.createStatement.execute(sqlStatement)
   }
 
-  def createStudyDayTable: Unit = { // TODO
-
+  def createStudyDayTable: Unit = {
+    val sqlStatement: String = "CREATE TABLE IF NOT EXISTS study_day (\n" +
+      "id INTEGER PRIMARY KEY, \n" +
+      "date INTEGER NOT NULL, \n" +
+      "to_do INTEGER, \n" +
+      "comment TEXT" +
+      ");"
+    connect.createStatement.execute(sqlStatement)
   }
 
   def createCourseTable: Unit = {
@@ -69,7 +75,7 @@ class DBController(dbUrl: String) {
 
   def clearAllTables: Unit = {
     //clearTable("record")
-    //clearTable("study_day")
+    clearTable("study_day")
     clearTable("semester")
     clearTable("course")
     clearTable("study_form")

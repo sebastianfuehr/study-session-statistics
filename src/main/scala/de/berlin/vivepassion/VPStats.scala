@@ -1,7 +1,7 @@
 package de.berlin.vivepassion
 
 import de.berlin.vivepassion.VPSConfiguration.properties
-import de.berlin.vivepassion.controller.{RecordController, StatisticsController}
+import de.berlin.vivepassion.controller.StatisticsController
 import de.berlin.vivepassion.io.CSVFileLoader
 import de.berlin.vivepassion.io.database.{DBController, DBRepository}
 import scopt.OptionParser
@@ -107,7 +107,7 @@ object VPStats extends App {
             .foreach(r => println(r.toString()))
         // print all study sessions grouped by days
         case Some(Config(_, _, _, GroupByIntervals.Day, _ , _, _, _, _, _)) =>
-          RecordController.computeLearnDaysFromSession(VPStats.learnSessions)// TODO implement printing of all study days
+          // TODO implement printing of all study days
         // print all study sessions
         case Some(Config(_, _, _, _, _ , _, _, _, _, _)) => VPStats.learnSessions
                                       .groupBy(r => r.getDate)
