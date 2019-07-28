@@ -1,22 +1,15 @@
 package de.berlin.vivepassion
 
+import java.io.FileInputStream
 import java.time.format.DateTimeFormatter
 import java.util.Properties
-import java.io.FileInputStream
 
 object VPSConfiguration {
 
   /** Path of the 'vivepassionstats.properties' file. */
   val PROPERTIES_PATH = "./src/main/resources/vivepassionstats.properties"
-  val properties: Properties = new Properties()
-
-  /**
-    * Loads all properties and prepares application launch.
-    */
-  def init(): Unit = {
-    /** Loads the properties from the {@link PROPERTIES_PATH}. */
-    VPSConfiguration.properties.load(new FileInputStream(VPSConfiguration.PROPERTIES_PATH))
-  }
+  val properties: Properties = new Properties
+  VPSConfiguration.properties.load(new FileInputStream(VPSConfiguration.PROPERTIES_PATH))
 
   // TODO implement method to have centralized scope of date time format
   def getDateTimeFormatter: DateTimeFormatter = {

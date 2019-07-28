@@ -1,6 +1,7 @@
 target/
 .idea/
 src/main/resources/vpstats_db
+src/main/resources/vpstats_test_db
 
 *.iml
 .attach*

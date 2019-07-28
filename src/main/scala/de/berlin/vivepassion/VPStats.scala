@@ -1,18 +1,23 @@
 package de.berlin.vivepassion
 
+import de.berlin.vivepassion.VPSConfiguration.properties
 import de.berlin.vivepassion.controller.{RecordController, StatisticsController}
 import de.berlin.vivepassion.io.CSVFileLoader
+import de.berlin.vivepassion.io.database.{DBController, DBRepository}
 import scopt.OptionParser
 
 /**
   * This object is the program entry point and terminal interface.
   */
-object VivePassionStatistics extends App {
+object VPStats extends App {
 
   val learnSessions = CSVFileLoader.getListOfCSVFile("./src/main/resources/tables/Studiumsorganisation_Semester_3.csv")
 
   /** This variable represents the status of the debug mode. If true additional error messages are printed. */
   var debugMode = false
+
+  val dbController: DBController = new DBController(properties.getProperty("db_url"))
+  val dbRepository: DBRepository = new DBRepository(dbController)
 
   val parser = new OptionParser[Config]("VivePassion Statistics") {
       head("vpstats", "0.1")
@@ -80,8 +85,6 @@ object VivePassionStatistics extends App {
 
   debugMode = parser.parse(args, Config()).get.debug // enabling/disabling debug mode
 
-  VPSConfiguration.init() // load all properties and prepare application launch.
-
   parser.parse(args, Config()) match { // parse the user input
 
     case config@Some(Config(_, "analyse", _, _, _ , _, _, _, _, _)) =>    // analysing mode (default)
@@ -98,15 +101,15 @@ object VivePassionStatistics extends App {
         // print all study sessions done alone // TODO implement method to print study sessions grouped by time interval and for alone or in a group
         case Some(Config(_, _, true, _, _ , _, _, _, _, _)) =>
           println("Study sessions alone:")
-          VivePassionStatistics.learnSessions
+          VPStats.learnSessions
             .filter(r => r.alone)
             .sortBy(r => r.id)
             .foreach(r => println(r.toString()))
         // print all study sessions grouped by days
         case Some(Config(_, _, _, GroupByIntervals.Day, _ , _, _, _, _, _)) =>
-          RecordController.computeLearnDaysFromSession(VivePassionStatistics.learnSessions)// TODO implement printing of all study days
+          RecordController.computeLearnDaysFromSession(VPStats.learnSessions)// TODO implement printing of all study days
         // print all study sessions
-        case Some(Config(_, _, _, _, _ , _, _, _, _, _)) => VivePassionStatistics.learnSessions
+        case Some(Config(_, _, _, _, _ , _, _, _, _, _)) => VPStats.learnSessions
                                       .groupBy(r => r.getDate)
                                       .foreach(r => println(r.toString()))
       }

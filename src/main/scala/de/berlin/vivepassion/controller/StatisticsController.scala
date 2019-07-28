@@ -2,7 +2,7 @@ package de.berlin.vivepassion.controller
 
 import java.time.LocalDate
 
-import de.berlin.vivepassion.VivePassionStatistics
+import de.berlin.vivepassion.VPStats
 import de.berlin.vivepassion.entities.Record
 
 class StatisticsController {
@@ -15,7 +15,7 @@ object StatisticsController {
     */
   def printAllStats(): Unit = {
     println("---------------------------------------------------------------------------------------------")
-    val temp = VivePassionStatistics.learnSessions
+    val temp = VPStats.learnSessions
 
     println("Complete learning time: "
       + BigDecimal(temp.foldLeft(0)((acc, r) => acc + r.getSessionLength.toInt) / 60.0)

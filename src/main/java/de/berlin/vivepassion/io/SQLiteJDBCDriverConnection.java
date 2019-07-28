@@ -1,7 +1,7 @@
 package de.berlin.vivepassion.io;
 
 import de.berlin.vivepassion.VPSConfiguration;
-import de.berlin.vivepassion.VivePassionStatistics;
+import de.berlin.vivepassion.VPStats;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -25,7 +25,7 @@ public class SQLiteJDBCDriverConnection {
             String url = VPSConfiguration.properties().getProperty("db_url");
             // create a connection to the database
             connection = DriverManager.getConnection(url);
-            if (VivePassionStatistics.debugMode())
+            if (VPStats.debugMode())
                 System.out.println(String.format("Connection with database at %s successful.", url));
         } catch (SQLException e) {
             System.out.println(e.getMessage());
