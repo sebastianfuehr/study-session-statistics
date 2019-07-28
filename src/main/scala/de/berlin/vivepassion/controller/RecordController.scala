@@ -13,7 +13,9 @@ object RecordController {
   var properties: Properties = new Properties()
   properties.load(new FileInputStream(VPSConfiguration.PROPERTIES_PATH))
 
-
+  def saveRecord(record: Record): Unit = {
+    val sql: String = "INSERT INTO "
+  }
 
    /**
     * @param list

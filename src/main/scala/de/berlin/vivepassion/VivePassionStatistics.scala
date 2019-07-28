@@ -11,8 +11,8 @@ object VivePassionStatistics extends App {
 
   val learnSessions = CSVFileLoader.getListOfCSVFile("./src/main/resources/tables/Studiumsorganisation_Semester_3.csv")
 
+  /** This variable represents the status of the debug mode. If true additional error messages are printed. */
   var debugMode = false
-  var isInterrupted = false
 
   val parser = new OptionParser[Config]("VivePassion Statistics") {
       head("vpstats", "0.1")
@@ -78,15 +78,14 @@ object VivePassionStatistics extends App {
 
   }
 
-  debugMode = parser.parse(args, Config()).get.debug // enabling debug mode
+  debugMode = parser.parse(args, Config()).get.debug // enabling/disabling debug mode
 
-  /** Load all properties and prepare application launch. */
-  VPSConfiguration.init()
+  VPSConfiguration.init() // load all properties and prepare application launch.
 
-  SQLiteJDBCDriverConnection.connect()
+  SQLiteJDBCDriverConnection.connect() // connect to the sqlite database
 
-  parser.parse(args, Config()) match {
-    // parse command
+  parser.parse(args, Config()) match { // parse the user input
+
     case config@Some(Config(_, "analyse", _, _, _ , _, _, _, _, _)) =>    // analysing mode (default)
       config match {
         case Some(Config(_, _, aloneBoolean, _, _, _ , _, _, _, _)) =>

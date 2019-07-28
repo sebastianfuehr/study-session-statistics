@@ -18,7 +18,7 @@ public class SQLiteJDBCDriverConnection {
      * in the vivepassionstats.properties. If the database is not yet present, a new
      * database is created.
      */
-    public static void connect() {
+    public static void testConnection() {
         Connection connection = null;
         try {
             // db parameters

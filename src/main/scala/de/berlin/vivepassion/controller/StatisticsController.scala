@@ -29,7 +29,7 @@ object StatisticsController {
       + getAverageLearningTime(temp)
       + " minutes/day\n")
 
-    println("Learning time by course [in hours]:")
+    println("Learning time by course [in hours]:") // TODO implement or check
     val learningTimeByCourse = temp.groupBy(r => r.course)
     for (course <- learningTimeByCourse) {
       val courseName = if (course._1.equals("")) "Other" else course._1
