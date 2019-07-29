@@ -2,6 +2,7 @@ target/
 .idea/
 src/main/resources/vpstats_db
 src/main/resources/vpstats_test_db
+src/main/resources/tables/
 
 *.iml
 .attach*
