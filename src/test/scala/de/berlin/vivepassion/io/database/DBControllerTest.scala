@@ -12,6 +12,7 @@ class DBControllerTest extends FunSuite with BeforeAndAfter {
   val dbRepository: DBRepository = new DBRepository(dbController)
 
   before {
+    dbController.createDatabase
     dbController.clearAllTables
   }
 
@@ -45,6 +46,15 @@ class DBControllerTest extends FunSuite with BeforeAndAfter {
       "Einführung in die Wirtschaftsinformatik", LocalDateTime.parse("2019-10-10T15:00"),
       LocalDateTime.parse("2019-10-10T15:45"), 5, true, ":-)", 0))
     assert(dbRepository.getRecords.length == 1)
+  }
+
+  test ("test clear all tables") {
+    dbController.clearAllTables
+    assert(dbRepository.getRecords.isEmpty
+      && dbRepository.getStudyDays.isEmpty
+      && dbRepository.getSemesters.isEmpty
+      && dbRepository.getCourses.isEmpty
+      && dbRepository.getStudyForms.isEmpty)
   }
 
   after {

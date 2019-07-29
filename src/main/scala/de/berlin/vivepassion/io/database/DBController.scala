@@ -24,15 +24,15 @@ class DBController(dbUrl: String) {
   def createRecordTable: Unit = {
     val sqlStatement: String = "CREATE TABLE IF NOT EXISTS record (\n" +
       "id INTEGER PRIMARY KEY, \n" +
-      "form TEXT, \n" +
-      "course TEXT, \n" +
-      "start_time INTEGER, \n" +
-      "end_time INTEGER, \n" +
-      "pause INTEGER, \n" +
+      "form TEXT NOT NULL, \n" +
+      "course TEXT NOT NULL, \n" +
+      "start_time INTEGER NOT NULL, \n" +
+      "end_time INTEGER NOT NULL, \n" +
+      "pause INTEGER NOT NULL, \n" +
       "alone INTEGER NOT NULL, \n" +
-      "comment TEXT, \n" +
-      "FOREIGN KEY(form) REFERENCES study_form(name), \n" +
-      "FOREIGN KEY(course) REFERENCES course(name)" +
+      "comment TEXT NOT NULL, \n" +
+      "FOREIGN KEY(form) REFERENCES study_form(form_name), \n" +
+      "FOREIGN KEY(course) REFERENCES course(course_name)" +
       ");"
     connect.createStatement.execute(sqlStatement)
   }
@@ -40,8 +40,8 @@ class DBController(dbUrl: String) {
   def createSemesterTable: Unit = {
     val sqlStatement: String = "CREATE TABLE IF NOT EXISTS semester (\n" +
       "id INTEGER PRIMARY KEY, \n" +
-      "name TEXT NOT NULL, \n" +
-      "CONSTRAINT unique_semester_name UNIQUE (name)" +
+      "semester_name TEXT NOT NULL, \n" +
+      "CONSTRAINT unique_semester_name UNIQUE (semester_name)" +
       ");"
     connect.createStatement.execute(sqlStatement)
   }
@@ -50,8 +50,8 @@ class DBController(dbUrl: String) {
     val sqlStatement: String = "CREATE TABLE IF NOT EXISTS study_day (\n" +
       "id INTEGER PRIMARY KEY, \n" +
       "date INTEGER NOT NULL, \n" +
-      "to_do INTEGER, \n" +
-      "comment TEXT, \n" +
+      "to_do INTEGER NOT NULL, \n" +
+      "comment TEXT NOT NULL, \n" +
       "CONSTRAINT unique_date UNIQUE (date)" +
       ");"
     connect.createStatement.execute(sqlStatement)
@@ -60,8 +60,8 @@ class DBController(dbUrl: String) {
   def createCourseTable: Unit = {
     val sqlStatement: String = "CREATE TABLE IF NOT EXISTS course (\n" +
       "id INTEGER PRIMARY KEY, \n" +
-      "name TEXT NOT NULL, " +
-      "CONSTRAINT unique_course_name UNIQUE (name)\n" +
+      "course_name TEXT NOT NULL, " +
+      "CONSTRAINT unique_course_name UNIQUE (course_name)\n" +
       ");"
     connect.createStatement.execute(sqlStatement)
   }
@@ -69,8 +69,8 @@ class DBController(dbUrl: String) {
   def createStudyFormTable: Unit = {
     val sqlStatement: String = "CREATE TABLE IF NOT EXISTS study_form (\n" +
       "id INTEGER PRIMARY KEY, \n" +
-      "name TEXT NOT NULL, " +
-      "CONSTRAINT unique_study_form UNIQUE (name)\n" +
+      "form_name TEXT NOT NULL, " +
+      "CONSTRAINT unique_study_form UNIQUE (form_name)\n" +
       ");"
     connect.createStatement.execute(sqlStatement)
   }

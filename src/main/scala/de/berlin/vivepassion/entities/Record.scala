@@ -1,9 +1,10 @@
 package de.berlin.vivepassion.entities
 
 import java.io.FileInputStream
+import java.sql.ResultSet
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
-import java.time.{LocalDate, LocalDateTime}
+import java.time.{Instant, LocalDate, LocalDateTime, ZoneId}
 import java.util.Properties
 
 import de.berlin.vivepassion.VPSConfiguration
@@ -111,5 +112,29 @@ object Record {
     * @return
     */
   def getIsAloneBoolean(isAlone: String, aloneKeyWord: String): Boolean = if (isAlone.equals(aloneKeyWord)) true else false
+
+  /**
+   * Converts a java ResultSet into a scala List[Record].
+   * @param resultSet ResultSet to convert.
+   * @return List of records.
+   */
+  def fromResultSet(resultSet: ResultSet): List[Record] = {
+    new Iterator[Record] { // https://stackoverflow.com/questions/9636545/treating-an-sql-resultset-like-a-scala-stream
+      def hasNext = resultSet.next()
+      def next() = { // here a typecast happens
+        val form = resultSet.getString("form")
+        val course = resultSet.getString("course")
+        val startTime = Instant.ofEpochMilli(resultSet.getInt("start_time").toLong)
+          .atZone(ZoneId.systemDefault()).toLocalDateTime
+        val endTime = Instant.ofEpochMilli(resultSet.getInt("end_time").toLong)
+          .atZone(ZoneId.systemDefault()).toLocalDateTime
+        val pause = resultSet.getInt("pause")
+        val alone = if (resultSet.getInt("alone") == 1) true else false
+        val comment = resultSet.getString("comment")
+        val id = resultSet.getInt("id").toLong
+        Record(form, course, startTime, endTime, pause, alone, comment, id)
+      }
+    }.toList
+  }
 
 }

@@ -1,35 +1,25 @@
 package de.berlin.vivepassion.io.database
 
 import java.sql.{Date, ResultSet, Timestamp}
-import java.time.{Instant, ZoneId}
 
 import de.berlin.vivepassion.entities.{Record, StudyDay}
 
 /** Defines methods to interact with the database. */
 class DBRepository(dbController: DBController) {
 
+  /** Executes a query on the database and returns the results as a ResultSet. */
+  def queryDatabaseFor(sqlStatement: String): ResultSet = {
+    dbController.connect.createStatement.executeQuery(sqlStatement);
+  }
+
+  // get entities methods --------------------------------------------------------------
   /**
    * Retrieves all persisted study sessions (record entity) from the database table record.
    * @return List of study sessions.
    */
   def getRecords: List[Record] = {
-    val resultSet: ResultSet = dbController.connect.createStatement.executeQuery("SELECT * FROM record")
-    new Iterator[Record] { // https://stackoverflow.com/questions/9636545/treating-an-sql-resultset-like-a-scala-stream
-      def hasNext = resultSet.next()
-      def next() = { // here a typecast happens
-        val form = resultSet.getString("form")
-        val course = resultSet.getString("course")
-        val startTime = Instant.ofEpochMilli(resultSet.getInt("start_time").toLong)
-                          .atZone(ZoneId.systemDefault()).toLocalDateTime
-        val endTime = Instant.ofEpochMilli(resultSet.getInt("end_time").toLong)
-                        .atZone(ZoneId.systemDefault()).toLocalDateTime
-        val pause = resultSet.getInt("pause")
-        val alone = if (resultSet.getInt("alone") == 1) true else false
-        val comment = resultSet.getString("comment")
-        val id = resultSet.getInt("id").toLong
-        Record(form, course, startTime, endTime, pause, alone, comment, id)
-      }
-    }.toList
+    val resultSet: ResultSet = queryDatabaseFor("SELECT * FROM record")
+    Record.fromResultSet(resultSet)
   }
 
   /**
@@ -37,44 +27,35 @@ class DBRepository(dbController: DBController) {
    * @return List of study days.
    */
   def getStudyDays: List[StudyDay] = {
-    val resultSet: ResultSet = dbController.connect.createStatement.executeQuery("SELECT * FROM study_day")
-    new Iterator[StudyDay] { // https://stackoverflow.com/questions/9636545/treating-an-sql-resultset-like-a-scala-stream
-      def hasNext = resultSet.next()
-      def next() = { // here a typecast happens
-        val id = resultSet.getInt("id").toLong
-        val date = Instant.ofEpochMilli(resultSet.getString("date").toLong).atZone(ZoneId.systemDefault()).toLocalDate
-        val todoTime = resultSet.getInt("to_do")
-        val comment = resultSet.getString("comment")
-        StudyDay(id, date, todoTime, comment)
-      }
-    }.toList
+    val resultSet: ResultSet = queryDatabaseFor("SELECT * FROM study_day")
+    StudyDay.fromResultSet(resultSet)
   }
 
   /**
     * Retrieves all persisted study forms from the database table study_form.
     * @return List of study forms.
     */
-  def getStudyForms: List[String] = getNamesFrom("study_form")
+  def getStudyForms: List[String] = getNamesFrom("study_form", "form_name")
 
   /**
    * Retrieves all persisted courses from the database table course.
    * @return List of courses.
    */
-  def getCourses: List[String] = getNamesFrom("course")
+  def getCourses: List[String] = getNamesFrom("course", "course_name")
 
   /**
    * Retrieves all persisted semesters from the database table semester.
    * @return List of semesters.
    */
-  def getSemesters: List[String] = getNamesFrom("semester")
+  def getSemesters: List[String] = getNamesFrom("semester", "semester_name")
 
   /**
    * Retrieves a list of names from a specified table with this column.
    * @param tableName Name of the table to get a list from
    * @return List of strings.
    */
-  def getNamesFrom(tableName: String): List[String] = {
-    val resultSet: ResultSet = dbController.connect.createStatement.executeQuery(s"SELECT name FROM $tableName")
+  def getNamesFrom(tableName: String, nameString: String): List[String] = {
+    val resultSet: ResultSet = queryDatabaseFor(s"SELECT $nameString FROM $tableName")
     new Iterator[String] { // https://stackoverflow.com/questions/9636545/treating-an-sql-resultset-like-a-scala-stream
       def hasNext = resultSet.next()
       def next() = resultSet.getString(1)
@@ -87,7 +68,7 @@ class DBRepository(dbController: DBController) {
    * @param form The study form to be saved.
    */
   def saveStudyForm(form: String): Unit = {
-    val sqlStatement = "INSERT INTO study_form(name) VALUES(?)"
+    val sqlStatement = "INSERT INTO study_form(form_name) VALUES(?)"
     val prpstmt = dbController.connect.prepareStatement(sqlStatement)
     prpstmt.setString(1, form)
     prpstmt.executeUpdate
@@ -98,7 +79,7 @@ class DBRepository(dbController: DBController) {
    * @param course Name of the course.
    */
   def saveCourse(course: String): Unit = {
-    val sqlStatement = "INSERT INTO course(name) VALUES(?)"
+    val sqlStatement = "INSERT INTO course(course_name) VALUES(?)"
     val prpstmt = dbController.connect.prepareStatement(sqlStatement)
     prpstmt.setString(1, course)
     prpstmt.executeUpdate
@@ -109,7 +90,7 @@ class DBRepository(dbController: DBController) {
    * @param semester Name of the semester.
    */
   def saveSemester(semester: String): Unit = {
-    val sqlStatement = "INSERT INTO semester(name) VALUES(?)"
+    val sqlStatement = "INSERT INTO semester(semester_name) VALUES(?)"
     val prpstmt = dbController.connect.prepareStatement(sqlStatement)
     prpstmt.setString(1, semester)
     prpstmt.executeUpdate
@@ -117,7 +98,7 @@ class DBRepository(dbController: DBController) {
 
   /**
    * Saves the study day into the study_day database table.
-   * @param studyDay
+   * @param studyDay StudyDay entity to be saved.
    */
   def saveStudyDay(studyDay: StudyDay): Unit = {
     val sqlStatement = "INSERT INTO study_day(date, to_do, comment) VALUES(?, ?, ?)"
