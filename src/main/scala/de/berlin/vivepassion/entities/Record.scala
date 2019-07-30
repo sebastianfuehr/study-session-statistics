@@ -45,8 +45,8 @@ case class Record(form: String, course: String, startTime: LocalDateTime, endTim
 }
 object Record {
 
-  var properties: Properties = new Properties()
-  properties.load(new FileInputStream(VPSConfiguration.PROPERTIES_PATH))
+  val properties: Properties = new Properties()
+  properties.load(new FileInputStream(VPSConfiguration.propertiesPath))
 
   /*
    * Initialisation of different formats for date and time for the record entity.
@@ -66,25 +66,25 @@ object Record {
     * @return New instance of Record.
     */
   def fromLine(line: String, id: Long): Record = {
-    val default_date_time_format = (
+    val defaultDateTimeFormat = (
         properties.getProperty("default_date_format")
         +"'T'"
         +properties.getProperty("default_time_format")
       )
-    val default_csv_learn_session_file_format = new CSVLearnSessionFormat(',')
-    fromLine(line, default_date_time_format, default_csv_learn_session_file_format, id)
+    val defaultCSVLearnSessionFileFormat = new CSVLearnSessionFormat(',')
+    fromLine(line, defaultDateTimeFormat, defaultCSVLearnSessionFileFormat, id)
   }
 
   /**
     *
     * @param line String to parse.
-    * @param date_time_format Format of the date and time columns.
+    * @param dateTimeFormat Format of the date and time columns.
     * @return New instance of Record.
     */
   // TODO Methoden zum parsen bereitstellen (mit Fehlerüberprüfung)
-  def fromLine(line: String, date_time_format: String, csv: CSVLearnSessionFormat, id: Long): Record = {
+  def fromLine(line: String, dateTimeFormat: String, csv: CSVLearnSessionFormat, id: Long): Record = {
     val recordString = line.split(",")
-    val dateTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern(date_time_format)
+    val dateTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern(dateTimeFormat)
 
     val startTime: LocalDateTime = LocalDateTime.parse(
       recordString(csv.dateColumn)+"T"+recordString(csv.startTimeColumn), dateTimeFormatter)
@@ -96,8 +96,7 @@ object Record {
 
     val isAlone: Boolean = getIsAloneBoolean(recordString(csv.aloneColumn), csv.aloneKeyWord)
 
-    var course: String = ""
-    if (recordString.length > 8) course = recordString(csv.courseColumn)
+    val course = recordString(csv.courseColumn)
 
     var comment: String = recordString(csv.commentColumn)
 
@@ -111,7 +110,7 @@ object Record {
     * @param aloneKeyWord String which represents the alone column in the csv table.
     * @return
     */
-  def getIsAloneBoolean(isAlone: String, aloneKeyWord: String): Boolean = if (isAlone.equals(aloneKeyWord)) true else false
+  def getIsAloneBoolean(isAlone: String, aloneKeyWord: String): Boolean = isAlone.equals(aloneKeyWord)
 
   /**
    * Converts a java ResultSet into a scala List[Record].
@@ -129,7 +128,7 @@ object Record {
         val endTime = Instant.ofEpochMilli(resultSet.getInt("end_time").toLong)
           .atZone(ZoneId.systemDefault()).toLocalDateTime
         val pause = resultSet.getInt("pause")
-        val alone = if (resultSet.getInt("alone") == 1) true else false
+        val alone = resultSet.getInt("alone") == 1
         val comment = resultSet.getString("comment")
         val id = resultSet.getInt("id").toLong
         Record(form, course, startTime, endTime, pause, alone, comment, id)

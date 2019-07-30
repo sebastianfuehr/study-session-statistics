@@ -7,9 +7,9 @@ import java.util.Properties
 object VPSConfiguration {
 
   /** Path of the 'vivepassionstats.properties' file. */
-  val PROPERTIES_PATH = "./src/main/resources/vivepassionstats.properties"
+  val propertiesPath = "./src/main/resources/vivepassionstats.properties"
   val properties: Properties = new Properties
-  VPSConfiguration.properties.load(new FileInputStream(VPSConfiguration.PROPERTIES_PATH))
+  VPSConfiguration.properties.load(new FileInputStream(VPSConfiguration.propertiesPath))
 
   // TODO implement method to have centralized scope of date time format
   def getDateTimeFormatter: DateTimeFormatter = {
@@ -25,7 +25,7 @@ object VPSConfiguration {
     */
   def printApplicationProperties: Unit = {
     val props = new Properties()
-    props.load(new FileInputStream(PROPERTIES_PATH))
+    props.load(new FileInputStream(propertiesPath))
     props.forEach((k, v) => println(k+":\t"+v))
   }
 

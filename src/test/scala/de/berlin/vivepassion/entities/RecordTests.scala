@@ -6,15 +6,11 @@ import org.scalatest.{BeforeAndAfter, FunSuite}
 
 class RecordTests extends FunSuite with BeforeAndAfter {
 
-  var record: Record = _
-
-  before {
-    record = Record("Hausaufgaben machen",
-                    "Prog2",
-                    LocalDateTime.parse("2007-12-03T15:30:00"),
-                    LocalDateTime.parse("2007-12-03T16:15:00"),
-                    7, true, " ", 0)
-  }
+  val record = Record("Hausaufgaben machen",
+                        "Prog2",
+                        LocalDateTime.parse("2007-12-03T15:30:00"),
+                        LocalDateTime.parse("2007-12-03T16:15:00"),
+                        7, true, " ", 0)
 
   test ("test record getDate method") {
     assert(record.getDate == LocalDate.parse("2007-12-03"))

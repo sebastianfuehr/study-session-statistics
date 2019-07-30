@@ -12,7 +12,7 @@ object CSVFileLoader {
     */
   def getListOfCSVFile(path: String): List[Record] = {
     val bufferedSource = io.Source.fromFile(path)
-    var resultList: ListBuffer[Record] = ListBuffer.empty
+    val resultList: ListBuffer[Record] = ListBuffer.empty
     var index: Long = 0
     for (line <- bufferedSource.getLines) { // read each line of the csv file
       if (index != 0) resultList += Record.fromLine(line, index)

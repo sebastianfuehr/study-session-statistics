@@ -5,9 +5,6 @@ import java.time.LocalDate
 import de.berlin.vivepassion.VPStats
 import de.berlin.vivepassion.entities.Record
 
-class StatisticsController {
-
-}
 object StatisticsController {
 
   /**

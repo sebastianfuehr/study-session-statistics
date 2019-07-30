@@ -18,13 +18,13 @@ class DBControllerTest extends FunSuite with BeforeAndAfter {
 
   test ("test create course database table") {
     dbController.createCourseTable
-    dbRepository.saveCourse("Einführung in die Wirtschaftsinformatik")
+    dbRepository.saveCourse("Introduction to Programming with Java")
     assert(dbRepository.getCourses.length == 1)
   }
 
   test ("test create study_form database table") {
     dbController.createStudyFormTable
-    dbRepository.saveStudyForm("Übungsaufgaben rechnen")
+    dbRepository.saveStudyForm("Calculate Problem Sets")
     assert(dbRepository.getStudyForms.length == 1)
   }
 
@@ -42,8 +42,8 @@ class DBControllerTest extends FunSuite with BeforeAndAfter {
 
   test ("test create record database table") {
     dbController.createRecordTable
-    dbRepository.saveRecord(Record("Übungsaufgaben rechnen",
-      "Einführung in die Wirtschaftsinformatik", LocalDateTime.parse("2019-10-10T15:00"),
+    dbRepository.saveRecord(Record("Calculate Problem Sets",
+      "Introduction to Programming with Java", LocalDateTime.parse("2019-10-10T15:00"),
       LocalDateTime.parse("2019-10-10T15:45"), 5, true, ":-)", 0))
     assert(dbRepository.getRecords.length == 1)
   }

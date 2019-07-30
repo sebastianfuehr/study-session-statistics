@@ -25,7 +25,7 @@ class DBRepositoryTest extends FunSuite with BeforeAndAfter {
     dbController.createRecordTable
     val thrown = intercept[Exception] {
       dbRepository.saveRecord(Record(null,
-        "Einführung in die Wirtschaftsinformatik", LocalDateTime.parse("2019-10-10T15:00"),
+        "Introduction to Programming with Java", LocalDateTime.parse("2019-10-10T15:00"),
         LocalDateTime.parse("2019-10-10T15:45"), 5, true, ":-)", 0))
     }
     assert(thrown.isInstanceOf[SQLiteException])

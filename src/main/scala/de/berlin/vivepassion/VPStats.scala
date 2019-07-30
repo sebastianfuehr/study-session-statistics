@@ -13,9 +13,6 @@ object VPStats extends App {
 
   val learnSessions = CSVFileLoader.getListOfCSVFile("./src/main/resources/tables/Studiumsorganisation_Semester_3.csv")
 
-  /** This variable represents the status of the debug mode. If true additional error messages are printed. */
-  var debugMode = false
-
   val dbController: DBController = new DBController(properties.getProperty("db_url"))
   val dbRepository: DBRepository = new DBRepository(dbController)
 
@@ -83,7 +80,11 @@ object VPStats extends App {
 
   }
 
-  debugMode = parser.parse(args, Config()).get.debug // enabling/disabling debug mode
+  /** This variable represents the status of the debug mode. If true additional error messages are printed. */
+  val debugMode = parser
+                .parse(args, Config()) // enabling/disabling debug mode
+                .getOrElse(throw new Exception("Config file couldn't be read."))
+                .debug
 
   parser.parse(args, Config()) match { // parse the user input
 
