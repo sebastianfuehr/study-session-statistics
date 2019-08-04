@@ -13,7 +13,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <java.version>1.8</java.version>
-        <scala.version>2.12.8</scala.version>
+        <scala.version>2.13.0-M2</scala.version>
         <encoding>UTF-8</encoding>
         <assembly.version>3.1.1</assembly.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
@@ -21,25 +21,19 @@
     </properties>
 
     <dependencies>
+        <!-- Scala -->
         <dependency>
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-library</artifactId>
             <version>${scala.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.scalatest</groupId>
-            <artifactId>scalatest_2.12</artifactId>
-            <version>3.0.5</version>
-            <scope>test</scope>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/com.github.scopt/scopt -->
-        <dependency>
             <groupId>com.github.scopt</groupId>
-            <artifactId>scopt_2.12</artifactId>
+            <artifactId>scopt_${scala.version}</artifactId>
             <version>3.7.0</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc -->
-        <dependency>
+        <!-- Database -->
+        <dependency> <!-- https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc -->
             <groupId>org.xerial</groupId>
             <artifactId>sqlite-jdbc</artifactId>
             <version>3.28.0</version>
@@ -52,7 +46,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
+                <version>3.8.1</version>
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
@@ -64,7 +58,7 @@
                 <artifactId>build-helper-maven-plugin</artifactId>
                 <version>1.10</version>
                 <executions>
-                    <execution>
+                    <execution> <!-- Scala source directory specification -->
                         <id>add-source</id>
                         <phase>generate-sources</phase>
                         <goals>
@@ -76,7 +70,7 @@
                             </sources>
                         </configuration>
                     </execution>
-                    <execution>
+                    <execution> <!-- Scala test source directory specification -->
                         <id>add-test-source</id>
                         <phase>generate-test-sources</phase>
                         <goals>
@@ -90,7 +84,6 @@
                     </execution>
                 </executions>
             </plugin>
-
             <!-- Use scala-maven-plugin for Scala support -->
             <plugin>
                 <groupId>net.alchim31.maven</groupId>
@@ -99,7 +92,6 @@
                 <executions>
                     <execution>
                         <goals>
-                            <!-- Need to specify this explicitly, otherwise plugin won't be called when doing e.g. mvn compile -->
                             <goal>compile</goal>
                             <goal>testCompile</goal>
                         </goals>
