@@ -2,7 +2,7 @@ package de.berlin.vivepassion.io.database
 
 import java.sql.{Date, ResultSet, Timestamp}
 
-import de.berlin.vivepassion.entities.{Record, StudyDay}
+import de.berlin.vivepassion.entities.{Record, Semester, StudyDay}
 
 /** Defines methods to interact with the database. */
 class DBRepository(dbController: DBController) {
@@ -89,10 +89,12 @@ class DBRepository(dbController: DBController) {
    * Saves the semester into the semester database table.
    * @param semester Name of the semester.
    */
-  def saveSemester(semester: String): Unit = {
-    val sqlStatement = "INSERT INTO semester(semester_name) VALUES(?)"
+  def saveSemester(semester: Semester): Unit = {
+    val sqlStatement = "INSERT INTO semester(semester_name, start_date, end_date) VALUES(?, ? ,?)"
     val prpstmt = dbController.connect.prepareStatement(sqlStatement)
-    prpstmt.setString(1, semester)
+    prpstmt.setString(1, semester.name)
+    prpstmt.setDate(2, Date.valueOf(semester.start))
+    prpstmt.setDate(3, Date.valueOf(semester.end))
     prpstmt.executeUpdate
   }
 
@@ -119,10 +121,13 @@ class DBRepository(dbController: DBController) {
       ") VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)"
     val prpstmt = dbController.connect.prepareStatement(sqlStatement)
     prpstmt.setDate(1, Date.valueOf(record.getDate))
-    prpstmt.setString(2, record.form)
-    prpstmt.setString(3, record.course)
+    prpstmt.setString(2, if (record.form == null) null else record.form)
+    prpstmt.setString(3, if (record.course == null) null else record.course)
     prpstmt.setInt(4, (Timestamp.valueOf(record.startTime).getTime / 1000).toInt)
-    prpstmt.setInt(5, (Timestamp.valueOf(record.endTime).getTime / 1000).toInt)
+
+    if (record.endTime == null) prpstmt.setNull(5, java.sql.Types.INTEGER)
+    else prpstmt.setInt(5, (Timestamp.valueOf(record.endTime).getTime / 1000).toInt)
+
     prpstmt.setInt(6, record.pause)
     val aloneInt = if (record.alone) 1 else 0
     prpstmt.setInt(7, aloneInt)

@@ -93,16 +93,17 @@ object Record {
       recordString(csv.dateColumn)+"T"+recordString(csv.endTimeColumn), dateTimeFormatter)
 
     var pause: Int = 0
-    if (recordString(csv.pauseColumn).length != 0) pause = Integer.parseInt(recordString(4))
+    if (recordString(csv.pauseColumn).length != 0) pause = Integer.parseInt(recordString(csv.pauseColumn))
 
     val isAlone: Boolean = getIsAloneBoolean(recordString(csv.aloneColumn), csv.aloneKeyWord)
 
     val course = recordString(csv.courseColumn)
 
-    var comment: String = recordString(csv.commentColumn)
+    val comment: String = recordString(csv.commentColumn)
 
+    val semester: String = properties.getProperty("current_semester")
 
-    Record(recordString(csv.formColumn), course, startTime, endTime, pause, isAlone, comment, id)
+    Record(recordString(csv.formColumn), course, startTime, endTime, pause, isAlone, comment, id, semester)
   }
 
   /**

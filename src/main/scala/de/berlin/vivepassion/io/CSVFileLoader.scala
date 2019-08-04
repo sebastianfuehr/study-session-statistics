@@ -22,13 +22,6 @@ object CSVFileLoader {
     resultList.toList
   }
 
-  def importCSVFile(path: String) = {
-    val list: List[Record] = getListOfCSVFile(path)
-    for (entry <- list) {
-
-    }
-  }
-
   /**
     *
     * @param record Record entity to be saved.

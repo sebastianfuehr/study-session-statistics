@@ -1,7 +1,7 @@
 package de.berlin.vivepassion
 
 import de.berlin.vivepassion.VPSConfiguration.properties
-import de.berlin.vivepassion.controller.StatisticsController
+import de.berlin.vivepassion.controller.{RecordController, SemesterController, StatisticsController}
 import de.berlin.vivepassion.io.CSVFileLoader
 import de.berlin.vivepassion.io.database.{DBController, DBRepository}
 import scopt.OptionParser
@@ -16,8 +16,8 @@ object VPStats extends App {
 
   val testTablePath: String = "./src/main/resources/tables/Studiumsorganisation_Semester_3.csv"
 
-  val parser = new OptionParser[Config]("VivePassion Statistics") {
-      head("vpstats", "0.1")
+  val parser = new OptionParser[Config]("vpstat") {
+      head("Vivepassion Statistics", "0.1")
 
       // scopt implemented options
       help("help").text("prints this usage text")
@@ -61,22 +61,26 @@ object VPStats extends App {
         .action((_, config) => config.copy(mode = "start"))
         .text("start a new study session")
         .children(
-          opt[String]('d', "date")
-            .action((input, config) => config.copy(date = input)),
-          opt[String]("start")
-            .action((input, config) => config.copy(startTime = input)),
-          opt[String]("end")
-            .action((input, config) => config.copy(endTime = input)),
-          opt[Int]("pause")
+          opt[String]('f', "form")
             .optional()
-            .action((input, config) => config.copy(pause = input)),
-          opt[String]("comment")
+            .action((input, config) => config.copy(form = input))
+            .text("specify the form of studying"),
+          opt[String]('c', "course")
             .optional()
-            .action((input, config) => config.copy(comment = input)),
-          opt[String]('s', "semester")
+            .action((input, config) => config.copy(course = input))
+            .text("university course"),
+          opt[String]('b', "begin")
+            .action((input, config) => config.copy(startTime = input))
+            .text("override the begin time of the study session"),
+          opt[String]('c', "comment")
+            .optional()
+            .action((input, config) => config.copy(comment = input))
+            .text("optional comment for the study session"),
+          opt[String]("semester")
             .optional()
             .action((input, config) => config.copy(semester = input))
-            .text("the semester of the study session")
+            .text("the semester of the study session " +
+              "(if not given, the last semester of the last registered semester is used)")
         )
 
       cmd("pause")
@@ -133,8 +137,9 @@ object VPStats extends App {
       }
 
 
-    case Some(Config(_, "start", alone, _, form, course, date, startTime, endTime, pause, comment, semester)) =>
-
+    case Some(Config(_, "start", alone, _, form, course, _, startTime, _, _, comment, semester)) =>
+      SemesterController.createSemesterIfNotExists(semester)
+      RecordController.startNewStudySession(alone, form, course, startTime, comment)
 
     case Some(Config(_, "pause", _, _, _, _, _,_, _, _, _, _)) =>
 

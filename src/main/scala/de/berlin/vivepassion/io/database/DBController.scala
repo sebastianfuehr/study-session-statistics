@@ -45,7 +45,11 @@ class DBController(dbUrl: String) {
     val sqlStatement: String = "CREATE TABLE IF NOT EXISTS semester (\n" +
       "id INTEGER PRIMARY KEY, \n" +
       "semester_name TEXT NOT NULL, \n" +
-      "CONSTRAINT unique_semester_name UNIQUE (semester_name)" +
+      "start_date INTEGER NOT NULL, \n" +
+      "end_Date INTEGER NOT NULL, \n" +
+      "CONSTRAINT unique_semester_name UNIQUE (semester_name), \n" +
+      "CONSTRAINT unique_start_date UNIQUE (start_date), \n" +
+      "CONSTRAINT unique_end_date UNIQUE (end_date)" +
       ");"
     connect.createStatement.execute(sqlStatement)
   }
