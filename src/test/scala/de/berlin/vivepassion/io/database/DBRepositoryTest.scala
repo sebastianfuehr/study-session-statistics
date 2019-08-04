@@ -24,9 +24,9 @@ class DBRepositoryTest extends FunSuite with BeforeAndAfter {
   test ("test inserting NULL attribute in record table") {
     dbController.createRecordTable
     val thrown = intercept[Exception] {
-      dbRepository.saveRecord(Record(null,
+      dbRepository.saveRecord(Record(0, null,
         "Introduction to Programming with Java", LocalDateTime.parse("2019-10-10T15:00"),
-        LocalDateTime.parse("2019-10-10T15:45"), 5, true, ":-)", 0, "SS19"))
+        LocalDateTime.parse("2019-10-10T15:45"), 5, true, ":-)", "SS19"))
     }
     assert(thrown.isInstanceOf[SQLiteException])
   }
@@ -39,7 +39,7 @@ class DBRepositoryTest extends FunSuite with BeforeAndAfter {
 
   test ("test retrieve all study sessions of a specific month") (pending)
 
-  test ("test retrieve all study sessions of a specific semester") (pending)
+  test ("test retrieve all study sessions of a specific studyForm") (pending)
 
   test ("test retrieve all semesters") (pending)
 
@@ -51,7 +51,7 @@ class DBRepositoryTest extends FunSuite with BeforeAndAfter {
 
   test ("test retrieve all study days") (pending)
 
-  test ("test retrieve all study days of a specific semester") (pending)
+  test ("test retrieve all study days of a specific studyForm") (pending)
 
   test ("test retrieve a specific study day") (pending)
 

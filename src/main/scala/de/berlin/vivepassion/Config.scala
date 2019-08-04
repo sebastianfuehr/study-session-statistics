@@ -15,5 +15,5 @@ case class Config(
                    endTime: String = "",
                    pause: Int = 0,
                    comment: String = "",
-                   semester: String = ""
+                   semester: String = VPSConfiguration.properties.getProperty("current_semester")
                  )

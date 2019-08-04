@@ -28,7 +28,7 @@ class DBController(dbUrl: String) {
       "form TEXT NOT NULL, \n" +
       "course TEXT NOT NULL, \n" +
       "start_time INTEGER NOT NULL, \n" +
-      "end_time INTEGER NOT NULL, \n" +
+      "end_time INTEGER, \n" +
       "pause INTEGER NOT NULL, \n" +
       "alone INTEGER NOT NULL, \n" +
       "comment TEXT NOT NULL, \n" +
@@ -83,11 +83,11 @@ class DBController(dbUrl: String) {
     connect.createStatement.execute(sqlStatement)
   }
 
-  /** Clears the database tables study_day, semester, course, study_form and record. */
+  /** Clears the database tables study_day, studyForm, course, study_form and record. */
   def clearAllTables: Unit = {
     clearTable("record")
     clearTable("study_day")
-    clearTable("semester")
+    clearTable("studyForm")
     clearTable("course")
     clearTable("study_form")
   }

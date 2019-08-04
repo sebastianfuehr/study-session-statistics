@@ -22,12 +22,4 @@ object CSVFileLoader {
     resultList.toList
   }
 
-  /**
-    *
-    * @param record Record entity to be saved.
-    */
-  def saveRecord(record: Record): Unit = { // TODO Save record entity in database
-
-  }
-
 }

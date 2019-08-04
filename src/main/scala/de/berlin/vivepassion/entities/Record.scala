@@ -12,6 +12,7 @@ import de.berlin.vivepassion.io.CSVLearnSessionFormat
 
 /**
   * Entity class to describe a learn session as detailed as possible.
+  * @param id Identifier of the specific record entity.
   * @param form The form of learning (e.g. doing homework or using flashcards).
   * @param course The university course.
   * @param startTime The time the learn session started.
@@ -19,10 +20,9 @@ import de.berlin.vivepassion.io.CSVLearnSessionFormat
   * @param pause The amount of minutes which where used for regeneration, free time etc.
   * @param alone Did one work alone during this learn session or with other students?
   * @param comment What especially has been done during the study session?
-  * @param id Identifier of the specific record entity.
   */
-case class Record(form: String, course: String, startTime: LocalDateTime, endTime: LocalDateTime,
-                  pause: Int, alone: Boolean, comment: String, id: Long, semester: String) {
+case class Record(id: Long, form: String, course: String, startTime: LocalDateTime, endTime: LocalDateTime,
+                  pause: Int, alone: Boolean, comment: String, semester: String) {
 
   /**
     * @return The date of the learn session.
@@ -103,7 +103,7 @@ object Record {
 
     val semester: String = properties.getProperty("current_semester")
 
-    Record(recordString(csv.formColumn), course, startTime, endTime, pause, isAlone, comment, id, semester)
+    Record(id, recordString(csv.formColumn), course, startTime, endTime, pause, isAlone, comment, semester)
   }
 
   /**
@@ -135,7 +135,7 @@ object Record {
         val comment = resultSet.getString("comment")
         val id = resultSet.getInt("id").toLong
         val semester = resultSet.getString("semester")
-        Record(form, course, startTime, endTime, pause, alone, comment, id, semester)
+        Record(id, form, course, startTime, endTime, pause, alone, comment, semester)
       }
     }.toList
   }

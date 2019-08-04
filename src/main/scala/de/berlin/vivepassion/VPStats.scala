@@ -1,7 +1,11 @@
 package de.berlin.vivepassion
 
+import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
+
 import de.berlin.vivepassion.VPSConfiguration.properties
-import de.berlin.vivepassion.controller.{RecordController, SemesterController, StatisticsController}
+import de.berlin.vivepassion.controller.{CourseController, SemesterController, StatisticsController, StudyFormController}
+import de.berlin.vivepassion.entities.Record
 import de.berlin.vivepassion.io.CSVFileLoader
 import de.berlin.vivepassion.io.database.{DBController, DBRepository}
 import scopt.OptionParser
@@ -13,6 +17,8 @@ object VPStats extends App {
 
   val dbController: DBController = new DBController(properties.getProperty("db_url"))
   val dbRepository: DBRepository = new DBRepository(dbController)
+
+  dbController.createDatabase
 
   val testTablePath: String = "./src/main/resources/tables/Studiumsorganisation_Semester_3.csv"
 
@@ -76,11 +82,11 @@ object VPStats extends App {
             .optional()
             .action((input, config) => config.copy(comment = input))
             .text("optional comment for the study session"),
-          opt[String]("semester")
+          opt[String]("studyForm")
             .optional()
             .action((input, config) => config.copy(semester = input))
-            .text("the semester of the study session " +
-              "(if not given, the last semester of the last registered semester is used)")
+            .text("the studyForm of the study session " +
+              "(if not given, the last studyForm of the last registered studyForm is used)")
         )
 
       cmd("pause")
@@ -109,7 +115,7 @@ object VPStats extends App {
 
   parser.parse(args, Config()) match { // parse the user input
 
-    case config@Some(Config(_, "analyse", _, _, _ , _, _, _, _, _, _, _)) =>    // analysing mode (default)
+    case config@Some(Config(_, "analyze", _, _, _ , _, _, _, _, _, _, _)) =>    // analysing mode (default)
       config match {
         case Some(Config(_, _, aloneBoolean, _, _, _ , _, _, _, _, _, _)) =>
           println(s"Learn time ${if (aloneBoolean) "alone" else "in a group"}: " +
@@ -137,17 +143,44 @@ object VPStats extends App {
       }
 
 
-    case Some(Config(_, "start", alone, _, form, course, _, startTime, _, _, comment, semester)) =>
+    case Some(Config(_, "start", alone, _, form, course, _, startTimeString, _, _, comment, semester)) =>
       SemesterController.createSemesterIfNotExists(semester)
-      RecordController.startNewStudySession(alone, form, course, startTime, comment)
+      StudyFormController.createStudyFormIfNotExists(form)
+      CourseController.createCourseIfNotExists(course)
+      val startTime: LocalDateTime = if (startTimeString == "") LocalDateTime.now()
+      else LocalDateTime.parse(startTimeString, Record.dateTimeFormatter)
+      val newRecord = Record(-1,
+        form,
+        course,
+        startTime,
+        null,
+        0,
+        alone,
+        comment,
+        semester)
+      dbRepository.saveRecord(newRecord)
+      println(s"Study session started at ${newRecord.getStartTimeString}")
+
 
     case Some(Config(_, "pause", _, _, _, _, _,_, _, _, _, _)) =>
+      val tmpRec = dbRepository.getLastRecord()
+      dbRepository.saveRecord(Record(tmpRec.id, tmpRec.form, tmpRec.course, tmpRec.startTime,
+        LocalDateTime.now(), tmpRec.pause, tmpRec.alone, tmpRec.comment, tmpRec.semester))
 
 
     case Some(Config(_, "resume", _, _, _, _, _, _, _, _, _, _)) =>
+      val tmpRec = dbRepository.getLastRecord()
+      val pauseTime = tmpRec.endTime.until(LocalDateTime.now(), ChronoUnit.MILLIS).toInt
+      dbRepository.saveRecord(Record(tmpRec.id, tmpRec.form, tmpRec.course, tmpRec.startTime,
+        null, tmpRec.pause + pauseTime, tmpRec.alone, tmpRec.comment, tmpRec.semester))
 
 
     case Some(Config(_, "stop", _, _, _ , _, _, _, _, _, _, _)) =>
+      val tmpRec = dbRepository.getLastRecord()
+      val newRecord = Record(tmpRec.id, tmpRec.form, tmpRec.course, tmpRec.startTime,
+        LocalDateTime.now(), tmpRec.pause, tmpRec.alone, tmpRec.comment, tmpRec.semester)
+      dbRepository.saveRecord(newRecord)
+      println(s"Record saved: $newRecord")
 
 
     case _ => println("Command not known.")

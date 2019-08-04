@@ -23,7 +23,8 @@ object SemesterController {
    */
   def createSemesterIfNotExists(semester: String): Unit = {
     if (semester != null && !dbRepository.getSemesters.contains(semester)) {
-      println(s"The semester $semester was not found. A new one has to be created.")
+      println(s"The semester '$semester' was not found. A new one has to be created.")
+      createSemester(semester)
     }
   }
 
@@ -33,9 +34,9 @@ object SemesterController {
    * because it is ignored by the
    * {@link DBRepository#saveSemester(Semester) saveSemester}
    * method.
+   * @param name The name of the semester to be saved.
    */
-  def createSemester() = {
-    val name = StdIn.readLine("What is the name of the new semester?")
+  def createSemester(name: String) = {
     val startDateStr = StdIn.readLine("Which date is the first day of the semester?")
     val endDateStr = StdIn.readLine("Which is the last day?")
 

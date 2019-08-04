@@ -28,7 +28,7 @@ class DBControllerTest extends FunSuite with BeforeAndAfter {
     assert(dbRepository.getStudyForms.length == 1)
   }
 
-  test ("test create semester database table") {
+  test ("test create studyForm database table") {
     dbController.createSemesterTable
     dbRepository.saveSemester(
       Semester(0, "SS19", LocalDate.parse("2019-04-04"), LocalDate.parse("2019-10-31")))
@@ -43,9 +43,9 @@ class DBControllerTest extends FunSuite with BeforeAndAfter {
 
   test ("test create record database table") {
     dbController.createRecordTable
-    dbRepository.saveRecord(Record("Calculate Problem Sets",
+    dbRepository.saveRecord(Record(0, "Calculate Problem Sets",
       "Introduction to Programming with Java", LocalDateTime.parse("2019-10-10T15:00"),
-      LocalDateTime.parse("2019-10-10T15:45"), 5, true, ":-)", 0, "SS19"))
+      LocalDateTime.parse("2019-10-10T15:45"), 5, true, ":-)", "SS19"))
     assert(dbRepository.getRecords.length == 1)
   }
 

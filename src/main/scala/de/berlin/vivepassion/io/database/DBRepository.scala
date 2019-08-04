@@ -44,7 +44,7 @@ class DBRepository(dbController: DBController) {
   def getCourses: List[String] = getNamesFrom("course", "course_name")
 
   /**
-   * Retrieves all persisted semesters from the database table semester.
+   * Retrieves all persisted semesters from the database table studyForm.
    * @return List of semesters.
    */
   def getSemesters: List[String] = getNamesFrom("semester", "semester_name")
@@ -86,8 +86,8 @@ class DBRepository(dbController: DBController) {
   }
 
   /**
-   * Saves the semester into the semester database table.
-   * @param semester Name of the semester.
+   * Saves the studyForm into the studyForm database table.
+   * @param semester Name of the studyForm.
    */
   def saveSemester(semester: Semester): Unit = {
     val sqlStatement = "INSERT INTO semester(semester_name, start_date, end_date) VALUES(?, ? ,?)"
@@ -136,14 +136,9 @@ class DBRepository(dbController: DBController) {
     prpstmt.execute
   }
 
-  /**
-   * A complex method to save a new study session in the database.
-   * If there is no semester yet the user is prompted to specify the semester which will
-   * lead to the generation of study days for this semester.
-   * @param record
-   */
-  def saveStudySession(record: Record): Unit = {
-
+  def getLastRecord(): Record = {
+    val resultList = Record.fromResultSet(queryDatabaseFor("SELECT * FROM record"))
+    resultList.reduce((acc, elem) => if (elem.startTime.isAfter(acc.startTime)) elem else acc)
   }
 
 }
