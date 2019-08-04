@@ -11,10 +11,10 @@ import scopt.OptionParser
   */
 object VPStats extends App {
 
-  val learnSessions = CSVFileLoader.getListOfCSVFile("./src/main/resources/tables/Studiumsorganisation_Semester_3.csv")
-
   val dbController: DBController = new DBController(properties.getProperty("db_url"))
   val dbRepository: DBRepository = new DBRepository(dbController)
+
+  val testTablePath: String = "./src/main/resources/tables/Studiumsorganisation_Semester_3.csv"
 
   val parser = new OptionParser[Config]("VivePassion Statistics") {
       head("vpstats", "0.1")
@@ -60,23 +60,37 @@ object VPStats extends App {
       cmd("start")
         .action((_, config) => config.copy(mode = "start"))
         .text("start a new study session")
+        .children(
+          opt[String]('d', "date")
+            .action((input, config) => config.copy(date = input)),
+          opt[String]("start")
+            .action((input, config) => config.copy(startTime = input)),
+          opt[String]("end")
+            .action((input, config) => config.copy(endTime = input)),
+          opt[Int]("pause")
+            .optional()
+            .action((input, config) => config.copy(pause = input)),
+          opt[String]("comment")
+            .optional()
+            .action((input, config) => config.copy(comment = input)),
+          opt[String]('s', "semester")
+            .optional()
+            .action((input, config) => config.copy(semester = input))
+            .text("the semester of the study session")
+        )
+
+      cmd("pause")
+        .action((_, config) => config.copy(mode = "pause"))
+        .text("pause the current study session")
+
+      cmd("resume")
+        .action((_, config) => config.copy(mode = "stop"))
+        .text("resume the paused study session")
 
       cmd("stop")
         .action((_, config) => config.copy(mode = "stop"))
         .text("stop the current study session.\n " +
           "The application will ask for the form of learning and the course.")
-
-    /* TODO Does the application really need this functionality?
-      cmd("add")
-        .action((_, config) => config.copy(mode = "add"))
-        .text("add a new learn session")
-        .children(
-          arg[String]("form")
-            .text("what has been done during the study session"),
-          arg[String]("course")
-            .text("which course has been studied"),
-        )
-     */
 
   }
 
@@ -85,41 +99,50 @@ object VPStats extends App {
                 .parse(args, Config()) // enabling/disabling debug mode
                 .getOrElse(throw new Exception("Config file couldn't be read."))
                 .debug
+  if (debugMode) println("Debug mode active")
+
+  val learnSessions = CSVFileLoader.getListOfCSVFile(testTablePath)
 
   parser.parse(args, Config()) match { // parse the user input
 
-    case config@Some(Config(_, "analyse", _, _, _ , _, _, _, _, _)) =>    // analysing mode (default)
+    case config@Some(Config(_, "analyse", _, _, _ , _, _, _, _, _, _, _)) =>    // analysing mode (default)
       config match {
-        case Some(Config(_, _, aloneBoolean, _, _, _ , _, _, _, _)) =>
+        case Some(Config(_, _, aloneBoolean, _, _, _ , _, _, _, _, _, _)) =>
           println(s"Learn time ${if (aloneBoolean) "alone" else "in a group"}: " +
-            s"${StatisticsController.getLearningTimeAlone(learnSessions, aloneBoolean)} h")
-        case Some(Config(_, _, _, _, _ , _, _, _, _, _)) => StatisticsController.printAllStats()
+            s"${StatisticsController.getLearningTimeAlone(VPStats.learnSessions, aloneBoolean)} h")
+        case Some(Config(_, _, _, _, _ , _, _, _, _, _, _, _)) => StatisticsController.printAllStats()
       }
 
 
-    case config@Some(Config(_, "list", _, _, _ , _, _, _, _, _)) =>       // list tables mode
+    case config@Some(Config(_, "list", _, _, _ , _, _, _, _, _, _, _)) =>       // list tables mode
       config match {
         // print all study sessions done alone // TODO implement method to print study sessions grouped by time interval and for alone or in a group
-        case Some(Config(_, _, true, _, _ , _, _, _, _, _)) =>
+        case Some(Config(_, _, true, _, _ , _, _, _, _, _, _, _)) =>
           println("Study sessions alone:")
           VPStats.learnSessions
             .filter(r => r.alone)
             .sortBy(r => r.id)
             .foreach(r => println(r.toString()))
         // print all study sessions grouped by days
-        case Some(Config(_, _, _, GroupByIntervals.Day, _ , _, _, _, _, _)) =>
+        case Some(Config(_, _, _, GroupByIntervals.Day, _ , _, _, _, _, _, _, _)) =>
           // TODO implement printing of all study days
         // print all study sessions
-        case Some(Config(_, _, _, _, _ , _, _, _, _, _)) => VPStats.learnSessions
+        case Some(Config(_, _, _, _, _ , _, _, _, _, _, _, _)) => VPStats.learnSessions
                                       .groupBy(r => r.getDate)
                                       .foreach(r => println(r.toString()))
       }
 
 
-    case Some(Config(_, "start", _, _, _ , _, _, _, _, _)) =>
+    case Some(Config(_, "start", alone, _, form, course, date, startTime, endTime, pause, comment, semester)) =>
 
 
-    case Some(Config(_, "stop", _, _, _ , _, _, _, _, _)) =>
+    case Some(Config(_, "pause", _, _, _, _, _,_, _, _, _, _)) =>
+
+
+    case Some(Config(_, "resume", _, _, _, _, _, _, _, _, _, _)) =>
+
+
+    case Some(Config(_, "stop", _, _, _ , _, _, _, _, _, _, _)) =>
 
 
     case _ => println("Command not known.")

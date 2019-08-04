@@ -18,6 +18,8 @@
         <assembly.version>3.1.1</assembly.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
+
+        <maven.test.skip>false</maven.test.skip>
     </properties>
 
     <dependencies>
@@ -37,6 +39,14 @@
             <groupId>org.xerial</groupId>
             <artifactId>sqlite-jdbc</artifactId>
             <version>3.28.0</version>
+        </dependency>
+        <!-- Tests -->
+        <!-- https://mvnrepository.com/artifact/org.scalatest/scalatest -->
+        <dependency>
+            <groupId>org.scalatest</groupId>
+            <artifactId>scalatest_2.13.0-M2</artifactId>
+            <version>3.2.0-SNAP10</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -70,7 +80,7 @@
                             </sources>
                         </configuration>
                     </execution>
-                    <execution> <!-- Scala test source directory specification -->
+                    <!--<execution> Scala test source directory specification
                         <id>add-test-source</id>
                         <phase>generate-test-sources</phase>
                         <goals>
@@ -81,7 +91,7 @@
                                 <source>src/test/scala</source>
                             </sources>
                         </configuration>
-                    </execution>
+                    </execution>-->
                 </executions>
             </plugin>
             <!-- Use scala-maven-plugin for Scala support -->
@@ -93,7 +103,7 @@
                     <execution>
                         <goals>
                             <goal>compile</goal>
-                            <goal>testCompile</goal>
+                            <!--<goal>testCompile</goal>-->
                         </goals>
                     </execution>
                 </executions>

@@ -114,18 +114,31 @@ class DBRepository(dbController: DBController) {
    * @param record Record entity to be saved.
    */
   def saveRecord(record: Record): Unit = {
-    val sqlStatement = "INSERT INTO record(form, course, start_time, end_time, pause, alone, comment) " +
-      "VALUES(?, ?, ?, ?, ?, ?, ?)"
+    val sqlStatement = "INSERT INTO record(" +
+      "study_day, form, course, start_time, end_time, pause, alone, comment, semester" +
+      ") VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)"
     val prpstmt = dbController.connect.prepareStatement(sqlStatement)
-    prpstmt.setString(1, record.form)
-    prpstmt.setString(2, record.course)
-    prpstmt.setInt(3, (Timestamp.valueOf(record.startTime).getTime / 1000).toInt)
-    prpstmt.setInt(4, (Timestamp.valueOf(record.endTime).getTime / 1000).toInt)
-    prpstmt.setInt(5, record.pause)
+    prpstmt.setDate(1, Date.valueOf(record.getDate))
+    prpstmt.setString(2, record.form)
+    prpstmt.setString(3, record.course)
+    prpstmt.setInt(4, (Timestamp.valueOf(record.startTime).getTime / 1000).toInt)
+    prpstmt.setInt(5, (Timestamp.valueOf(record.endTime).getTime / 1000).toInt)
+    prpstmt.setInt(6, record.pause)
     val aloneInt = if (record.alone) 1 else 0
-    prpstmt.setInt(6, aloneInt)
-    prpstmt.setString(7, record.comment)
+    prpstmt.setInt(7, aloneInt)
+    prpstmt.setString(8, record.comment)
+    prpstmt.setString(9, record.semester)
     prpstmt.execute
+  }
+
+  /**
+   * A complex method to save a new study session in the database.
+   * If there is no semester yet the user is prompted to specify the semester which will
+   * lead to the generation of study days for this semester.
+   * @param record
+   */
+  def saveStudySession(record: Record): Unit = {
+
   }
 
 }

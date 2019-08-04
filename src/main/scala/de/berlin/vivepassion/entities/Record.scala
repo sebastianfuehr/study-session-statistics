@@ -7,7 +7,7 @@ import java.time.temporal.ChronoUnit
 import java.time.{Instant, LocalDate, LocalDateTime, ZoneId}
 import java.util.Properties
 
-import de.berlin.vivepassion.VPSConfiguration
+import de.berlin.vivepassion.{VPSConfiguration, VPStats}
 import de.berlin.vivepassion.io.CSVLearnSessionFormat
 
 /**
@@ -22,7 +22,7 @@ import de.berlin.vivepassion.io.CSVLearnSessionFormat
   * @param id Identifier of the specific record entity.
   */
 case class Record(form: String, course: String, startTime: LocalDateTime, endTime: LocalDateTime,
-                  pause: Int, alone: Boolean, comment: String, id: Long) {
+                  pause: Int, alone: Boolean, comment: String, id: Long, semester: String) {
 
   /**
     * @return The date of the learn session.
@@ -83,9 +83,10 @@ object Record {
     */
   // TODO Methoden zum parsen bereitstellen (mit Fehlerüberprüfung)
   def fromLine(line: String, dateTimeFormat: String, csv: CSVLearnSessionFormat, id: Long): Record = {
-    val recordString = line.split(",")
+    val recordString = line.split(",", -1)
     val dateTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern(dateTimeFormat)
 
+    if (VPStats.debugMode) println(s"Trying to parse ${recordString(csv.dateColumn)}...")
     val startTime: LocalDateTime = LocalDateTime.parse(
       recordString(csv.dateColumn)+"T"+recordString(csv.startTimeColumn), dateTimeFormatter)
     val endTime: LocalDateTime = LocalDateTime.parse(
@@ -99,6 +100,7 @@ object Record {
     val course = recordString(csv.courseColumn)
 
     var comment: String = recordString(csv.commentColumn)
+
 
     Record(recordString(csv.formColumn), course, startTime, endTime, pause, isAlone, comment, id)
   }
@@ -131,7 +133,8 @@ object Record {
         val alone = resultSet.getInt("alone") == 1
         val comment = resultSet.getString("comment")
         val id = resultSet.getInt("id").toLong
-        Record(form, course, startTime, endTime, pause, alone, comment, id)
+        val semester = resultSet.getString("semester")
+        Record(form, course, startTime, endTime, pause, alone, comment, id, semester)
       }
     }.toList
   }

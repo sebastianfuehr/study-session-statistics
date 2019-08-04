@@ -1,7 +1,5 @@
 package de.berlin.vivepassion
 
-import java.time.LocalDateTime
-
 import de.berlin.vivepassion.GroupByIntervals.GroupByIntervals
 
 case class Config(
@@ -12,8 +10,10 @@ case class Config(
                    // study session attributes
                    form: String = "",
                    course: String = "",
-                   startTime: LocalDateTime = null,
-                   endTime: LocalDateTime = null,
+                   date: String = "",
+                   startTime: String = "",
+                   endTime: String = "",
                    pause: Int = 0,
-                   comment: String = ""
+                   comment: String = "",
+                   semester: String = ""
                  )

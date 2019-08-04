@@ -24,6 +24,7 @@ class DBController(dbUrl: String) {
   def createRecordTable: Unit = {
     val sqlStatement: String = "CREATE TABLE IF NOT EXISTS record (\n" +
       "id INTEGER PRIMARY KEY, \n" +
+      "study_day INTEGER NOT NULL, \n" +
       "form TEXT NOT NULL, \n" +
       "course TEXT NOT NULL, \n" +
       "start_time INTEGER NOT NULL, \n" +
@@ -31,8 +32,11 @@ class DBController(dbUrl: String) {
       "pause INTEGER NOT NULL, \n" +
       "alone INTEGER NOT NULL, \n" +
       "comment TEXT NOT NULL, \n" +
+      "semester TEXT NOT NULL, \n" +
+      "FOREIGN KEY(study_day) REFERENCES study_day(date), \n" +
       "FOREIGN KEY(form) REFERENCES study_form(form_name), \n" +
-      "FOREIGN KEY(course) REFERENCES course(course_name)" +
+      "FOREIGN KEY(course) REFERENCES course(course_name), \n" +
+      "FOREIGN KEY(semester) REFERENCES semester(semester_name)" +
       ");"
     connect.createStatement.execute(sqlStatement)
   }
