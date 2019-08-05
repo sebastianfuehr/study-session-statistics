@@ -44,9 +44,15 @@
         <!-- https://mvnrepository.com/artifact/org.scalatest/scalatest -->
         <dependency>
             <groupId>org.scalatest</groupId>
-            <artifactId>scalatest_2.13.0-M2</artifactId>
-            <version>3.2.0-SNAP10</version>
+            <artifactId>scalatest_${scala.version}</artifactId>
+            <version>3.0.5</version>
             <scope>test</scope>
+        </dependency>
+        <dependency> <!-- Code Coverage -->
+            <groupId>org.jacoco</groupId>
+            <artifactId>jacoco-maven-plugin</artifactId>
+            <version>0.8.4</version>
+            <type>maven-plugin</type>
         </dependency>
     </dependencies>
 
@@ -61,6 +67,20 @@
                     <source>${java.version}</source>
                     <target>${java.version}</target>
                 </configuration>
+            </plugin>
+            <!-- Use scala-maven-plugin for Scala support -->
+            <plugin>
+                <groupId>net.alchim31.maven</groupId>
+                <artifactId>scala-maven-plugin</artifactId>
+                <version>3.2.2</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>compile</goal>
+                            <!--<goal>testCompile</goal>-->
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <!-- Use build-helper-maven-plugin to add Scala source and test source directories -->
             <plugin>
@@ -80,7 +100,7 @@
                             </sources>
                         </configuration>
                     </execution>
-                    <!--<execution> Scala test source directory specification
+                    <execution> <!-- Scala test source directory specification -->
                         <id>add-test-source</id>
                         <phase>generate-test-sources</phase>
                         <goals>
@@ -91,23 +111,10 @@
                                 <source>src/test/scala</source>
                             </sources>
                         </configuration>
-                    </execution>-->
-                </executions>
-            </plugin>
-            <!-- Use scala-maven-plugin for Scala support -->
-            <plugin>
-                <groupId>net.alchim31.maven</groupId>
-                <artifactId>scala-maven-plugin</artifactId>
-                <version>3.2.2</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>compile</goal>
-                            <!--<goal>testCompile</goal>-->
-                        </goals>
                     </execution>
                 </executions>
             </plugin>
+
         </plugins>
     </build>
 

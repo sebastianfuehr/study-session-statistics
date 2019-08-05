@@ -6,7 +6,7 @@ import org.scalatest.{BeforeAndAfter, FunSuite}
 
 class RecordTests extends FunSuite with BeforeAndAfter {
 
-  val record = Record(0, "Hausaufgaben machen",
+  val record = Record(0, "Doing homework",
                         "Prog2",
                         LocalDateTime.parse("2007-12-03T15:30:00"),
                         LocalDateTime.parse("2007-12-03T16:15:00"),
@@ -20,9 +20,13 @@ class RecordTests extends FunSuite with BeforeAndAfter {
     assert(record.getSessionLength == 38l)
   }
 
+  test ("test record toString method") {
+    assert(record.toString == "[0] 12.03.2007 - 15:30 to 16:15 | 38 min | alone, Prog2, Doing homework, -")
+  }
+
   // tests for record companion object ------------------------------------------------------------
   test ("test record mapping from string to record instance") {
-    val temp = Record.fromLine("12/03/2007,Di,15:30,16:15,7,Hausaufgaben machen,Allein,Prog2, ", 0)
+    val temp = Record.fromLine("03.12.2007,15:30,16:15,7,Hausaufgaben machen,Allein,Prog2, ", 0)
     assert(record == temp)
   }
 

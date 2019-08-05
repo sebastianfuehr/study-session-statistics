@@ -87,7 +87,7 @@ class DBController(dbUrl: String) {
   def clearAllTables: Unit = {
     clearTable("record")
     clearTable("study_day")
-    clearTable("studyForm")
+    clearTable("semester")
     clearTable("course")
     clearTable("study_form")
   }
