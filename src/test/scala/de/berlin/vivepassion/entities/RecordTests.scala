@@ -8,12 +8,12 @@ class RecordTests extends FunSuite with BeforeAndAfter {
 
   val record = Record(0, "Doing homework",
                         "Prog2",
-                        LocalDateTime.parse("2007-12-03T15:30:00"),
-                        LocalDateTime.parse("2007-12-03T16:15:00"),
-                        7, true, " ", "SS19")
+                        LocalDateTime.parse("2007-03-12T15:30:00"),
+                        LocalDateTime.parse("2007-03-12T16:15:00"),
+                        7, true, "", "SS19")
 
   test ("test record getDate method") {
-    assert(record.getDate == LocalDate.parse("2007-12-03"))
+    assert(record.getDate == LocalDate.parse("2007-03-12"))
   }
 
   test ("test record study session length") {
@@ -26,7 +26,7 @@ class RecordTests extends FunSuite with BeforeAndAfter {
 
   // tests for record companion object ------------------------------------------------------------
   test ("test record mapping from string to record instance") {
-    val temp = Record.fromLine("03.12.2007,15:30,16:15,7,Hausaufgaben machen,Allein,Prog2, ", 0)
+    val temp = Record.fromLine("12.03.2007,15:30,16:15,7,Doing homework,alone,Prog2,", 0)
     assert(record == temp)
   }
 

@@ -11,8 +11,8 @@ import de.berlin.vivepassion.{VPSConfiguration, VPStats}
 import de.berlin.vivepassion.io.CSVLearnSessionFormat
 
 /**
-  * Entity class to describe a learn session as detailed as possible.
-  * @param id Identifier of the specific record entity.
+  * Entity class to describe a study session.
+  * @param id Identifier of the specific record entity in the database.
   * @param form The form of learning (e.g. doing homework or using flashcards).
   * @param course The university course.
   * @param startTime The time the learn session started.
@@ -39,7 +39,11 @@ case class Record(id: Long, form: String, course: String, startTime: LocalDateTi
   def getSessionLength: Long = startTime.until(endTime, ChronoUnit.MINUTES) - pause
 
   override def toString: String = {
-    s"[$id] $getDateString from $getStartTimeString to $getEndTimeString -> ${getSessionLength}m"
+    s"[$id] $getDateString - $getStartTimeString to $getEndTimeString " +
+      s"| $getSessionLength min | " +
+      s"${if (alone) VPSConfiguration.langProps.getProperty("alone")
+      else VPSConfiguration.langProps.getProperty("group")}, " +
+      s"$course, $form, ${if (comment.length > 0) comment else "-"}"
   }
 
 }

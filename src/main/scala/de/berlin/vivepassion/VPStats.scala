@@ -23,7 +23,7 @@ object VPStats extends App {
   val testTablePath: String = "./src/main/resources/tables/Studiumsorganisation_Semester_3.csv"
 
   val parser = new OptionParser[Config]("vpstat") {
-      head("Vivepassion Statistics", "0.1")
+      head("Vivepassion Statistics", "0.0.1")
 
       // scopt implemented options
       help("help").text("prints this usage text")

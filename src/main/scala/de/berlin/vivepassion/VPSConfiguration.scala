@@ -8,8 +8,14 @@ object VPSConfiguration {
 
   /** Path of the 'vivepassionstats.properties' file. */
   val propertiesPath = "./src/main/resources/vivepassionstats.properties"
-  val properties: Properties = new Properties
-  VPSConfiguration.properties.load(new FileInputStream(VPSConfiguration.propertiesPath))
+  val properties: Properties = new Properties()
+  properties.load(new FileInputStream(propertiesPath))
+
+  /** Path of the language properties files. */
+  val langPath = "./src/main/resources/lang/vivepassionstats." +
+      properties.getProperty("language") + ".properties"
+  val langProps: Properties = new Properties()
+  langProps.load(new FileInputStream(langPath))
 
   // TODO implement method to have centralized scope of date time format
   def getDateTimeFormatter: DateTimeFormatter = {

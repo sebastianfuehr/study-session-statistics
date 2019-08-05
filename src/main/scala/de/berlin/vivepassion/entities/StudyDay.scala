@@ -3,6 +3,13 @@ package de.berlin.vivepassion.entities
 import java.sql.ResultSet
 import java.time.{Instant, LocalDate, ZoneId}
 
+/**
+ * Entity which represents a study day.
+ * @param id Id of the study day in the database.
+ * @param date Date of the study day.
+ * @param plannedStudyTime The planned study time.
+ * @param comment An optional comment about what is planned or what has been done at that day.
+ */
 case class StudyDay(id: Long, date: LocalDate, plannedStudyTime: Int, comment: String) {
 
 }

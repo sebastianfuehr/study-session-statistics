@@ -1,5 +1,7 @@
 package de.berlin.vivepassion.io
 
+import de.berlin.vivepassion.VPSConfiguration
+
 case class CSVLearnSessionFormat(csvSeparator: Char, dateColumn: Int, startTimeColumn: Int, endTimeColumn: Int,
                                  pauseColumn: Int, formColumn: Int, aloneColumn: Int, courseColumn: Int,
                                  commentColumn: Int, aloneKeyWord: String) {
@@ -9,7 +11,7 @@ case class CSVLearnSessionFormat(csvSeparator: Char, dateColumn: Int, startTimeC
     * @param csvSeparator Character which separates the values of the csv.
     */
   def this(csvSeparator: Char) = {
-    this(csvSeparator, 0, 1, 2, 3, 4, 5, 6, 7, "Allein")
+    this(csvSeparator, 0, 1, 2, 3, 4, 5, 6, 7, VPSConfiguration.langProps.getProperty("alone"))
   }
 
 

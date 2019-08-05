@@ -29,7 +29,7 @@
             <artifactId>scala-library</artifactId>
             <version>${scala.version}</version>
         </dependency>
-        <dependency>
+        <dependency> <!-- Command line parsing -->
             <groupId>com.github.scopt</groupId>
             <artifactId>scopt_${scala.version}</artifactId>
             <version>3.7.0</version>
@@ -41,8 +41,7 @@
             <version>3.28.0</version>
         </dependency>
         <!-- Tests -->
-        <!-- https://mvnrepository.com/artifact/org.scalatest/scalatest -->
-        <dependency>
+        <dependency> <!-- https://mvnrepository.com/artifact/org.scalatest/scalatest -->
             <groupId>org.scalatest</groupId>
             <artifactId>scalatest_${scala.version}</artifactId>
             <version>3.0.5</version>
@@ -114,7 +113,6 @@
                     </execution>
                 </executions>
             </plugin>
-
         </plugins>
     </build>
 
