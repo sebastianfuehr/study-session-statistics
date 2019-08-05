@@ -4,7 +4,7 @@ import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 
 import de.berlin.vivepassion.VPSConfiguration.properties
-import de.berlin.vivepassion.controller.{CourseController, SemesterController, StatisticsController, StudyFormController}
+import de.berlin.vivepassion.controller.StatisticsController
 import de.berlin.vivepassion.entities.Record
 import de.berlin.vivepassion.io.CSVFileLoader
 import de.berlin.vivepassion.io.database.{DBController, DBRepository}
@@ -120,7 +120,6 @@ object VPStats extends App {
         case Some(Config(_, _, aloneBoolean, _, _, _ , _, _, _, _, _, _)) =>
           println(s"Learn time ${if (aloneBoolean) "alone" else "in a group"}: " +
             s"${StatisticsController.getLearningTimeAlone(VPStats.learnSessions, aloneBoolean)} h")
-        case Some(Config(_, _, _, _, _ , _, _, _, _, _, _, _)) => StatisticsController.printAllStats()
       }
 
 
@@ -144,9 +143,9 @@ object VPStats extends App {
 
 
     case Some(Config(_, "start", alone, _, form, course, _, startTimeString, _, _, comment, semester)) =>
-      SemesterController.createSemesterIfNotExists(semester)
-      StudyFormController.createStudyFormIfNotExists(form)
-      CourseController.createCourseIfNotExists(course)
+      dbRepository.semesterController.createSemesterIfNotExists(semester)
+      dbRepository.studyFormController.createStudyFormIfNotExists(form)
+      dbRepository.courseController.createCourseIfNotExists(course)
       val startTime: LocalDateTime = if (startTimeString == "") LocalDateTime.now()
       else LocalDateTime.parse(startTimeString, Record.dateTimeFormatter)
       val newRecord = Record(-1,

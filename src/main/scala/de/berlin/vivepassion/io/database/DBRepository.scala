@@ -2,10 +2,18 @@ package de.berlin.vivepassion.io.database
 
 import java.sql.{Date, ResultSet, Timestamp}
 
+import de.berlin.vivepassion.VPStats
+import de.berlin.vivepassion.controller.{CourseController, RecordController, SemesterController, StudyFormController}
 import de.berlin.vivepassion.entities.{Record, Semester, StudyDay}
+import de.berlin.vivepassion.io.CSVFileLoader
 
 /** Defines methods to interact with the database. */
 class DBRepository(dbController: DBController) {
+
+  val courseController = new CourseController(this)
+  val recordController = new RecordController(this)
+  val semesterController = new SemesterController(this)
+  val studyFormController = new StudyFormController(this)
 
   /** Executes a query on the database and returns the results as a ResultSet. */
   def queryDatabaseFor(sqlStatement: String): ResultSet = {
@@ -116,6 +124,7 @@ class DBRepository(dbController: DBController) {
    * @param record Record entity to be saved.
    */
   def saveRecord(record: Record): Unit = {
+    println(s"Save Record in DB: $record")
     val sqlStatement = "INSERT INTO record(" +
       "study_day, form, course, start_time, end_time, pause, alone, comment, semester" +
       ") VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)"
@@ -133,12 +142,34 @@ class DBRepository(dbController: DBController) {
     prpstmt.setInt(7, aloneInt)
     prpstmt.setString(8, record.comment)
     prpstmt.setString(9, record.semester)
-    prpstmt.execute
+    prpstmt.execute()
   }
 
   def getLastRecord(): Record = {
     val resultList = Record.fromResultSet(queryDatabaseFor("SELECT * FROM record"))
     resultList.reduce((acc, elem) => if (elem.startTime.isAfter(acc.startTime)) elem else acc)
+  }
+
+  /**
+   * Read all lines of a csv file and save then one by one in a database.
+   * @param csvPath Path of the csv file to be imported.
+   */
+  def importCsvIntoDatabase(csvPath: String, semesterName: String) = {
+    val list: List[Record] = CSVFileLoader.getListOfCSVFile(csvPath)
+
+    if (VPStats.debugMode) println(s"Importing ${list.length} elements of semester $semesterName")
+
+    val firstDay = list.map(rec => rec.getDate)
+      .reduce((acc, elem) => if (elem.isBefore(acc)) elem else acc)
+    val lastDay = list.map(rec => rec.getDate)
+      .reduce((acc, elem) => if (elem.isAfter(acc)) elem else acc)
+    saveSemester(Semester(-1, semesterName, firstDay, lastDay))
+
+    for (element <- list) {
+      courseController.createCourseIfNotExists(element.course)
+      studyFormController.createStudyFormIfNotExists(element.form)
+      saveRecord(element)
+    }
   }
 
 }

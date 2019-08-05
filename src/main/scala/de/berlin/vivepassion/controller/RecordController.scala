@@ -4,9 +4,10 @@ import java.io.FileInputStream
 import java.util.Properties
 
 import de.berlin.vivepassion.VPSConfiguration
+import de.berlin.vivepassion.io.database.DBRepository
 
 /** Controller class for study sessions. */
-object RecordController {
+class RecordController(dbRepository: DBRepository) {
 
   val properties: Properties = new Properties()
   properties.load(new FileInputStream(VPSConfiguration.propertiesPath))

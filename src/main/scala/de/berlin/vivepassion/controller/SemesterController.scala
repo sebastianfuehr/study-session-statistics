@@ -6,12 +6,12 @@ import java.time.format.DateTimeFormatter
 import java.util.Properties
 
 import de.berlin.vivepassion.VPSConfiguration
-import de.berlin.vivepassion.VPStats.dbRepository
 import de.berlin.vivepassion.entities.Semester
+import de.berlin.vivepassion.io.database.DBRepository
 
 import scala.io.StdIn
 
-object SemesterController {
+class SemesterController(dbRepository: DBRepository) {
 
   val properties: Properties = new Properties()
   properties.load(new FileInputStream(VPSConfiguration.propertiesPath))

@@ -1,30 +1,35 @@
 package de.berlin.vivepassion.io.database
 
+import java.io.FileInputStream
 import java.time.{LocalDate, LocalDateTime}
+import java.util.Properties
 
-import de.berlin.vivepassion.VPSConfiguration
 import de.berlin.vivepassion.entities.{Record, StudyDay}
 import org.scalatest.{BeforeAndAfter, FunSuite}
 import org.sqlite.SQLiteException
 
 class DBRepositoryTest extends FunSuite with BeforeAndAfter {
 
-  val dbController: DBController = new DBController(VPSConfiguration.properties.getProperty("test_db_url"))
-  val dbRepository: DBRepository = new DBRepository(dbController)
-  val mockDB: MockDatabase = new MockDatabase(dbController, dbRepository)
+  /** Path of the 'vpstats_test.properties' file. */
+  val testPropertiesPath = "./src/main/resources/vpstats_test.properties"
+  val testProperties: Properties = new Properties()
+  testProperties.load(new FileInputStream(testPropertiesPath))
+
+  val dbTestController: DBController = new DBController(testProperties.getProperty("test_db_url"))
+  val dbTestRepository: DBRepository = new DBRepository(dbTestController)
+
+  dbTestController.createDatabase
 
   test ("test try inserting NULL attribute in study_day table") {
-    dbController.createStudyDayTable
     val thrown = intercept[Exception] {
-      dbRepository.saveStudyDay(StudyDay(0, LocalDate.parse("2019-10-10"), 0, null))
+      dbTestRepository.saveStudyDay(StudyDay(0, LocalDate.parse("2019-10-10"), 0, null))
     }
     assert(thrown.isInstanceOf[SQLiteException])
   }
 
   test ("test inserting NULL attribute in record table") {
-    dbController.createRecordTable
     val thrown = intercept[Exception] {
-      dbRepository.saveRecord(Record(0, null,
+      dbTestRepository.saveRecord(Record(0, null,
         "Introduction to Programming with Java", LocalDateTime.parse("2019-10-10T15:00"),
         LocalDateTime.parse("2019-10-10T15:45"), 5, true, ":-)", "SS19"))
     }
@@ -55,8 +60,15 @@ class DBRepositoryTest extends FunSuite with BeforeAndAfter {
 
   test ("test retrieve a specific study day") (pending)
 
+  dbTestController.clearAllTables
+
+  test ("test import csv file into database") {
+    dbTestRepository.importCsvIntoDatabase(testProperties.getProperty("test_csv_table_path"), "WS18/19")
+    assert(dbTestRepository.getCourses.length == 2)
+  }
+
   after {
-    dbController.clearAllTables
+    dbTestController.clearAllTables
   }
 
 }
