@@ -1,53 +1,39 @@
 package de.berlin.vivepassion.io.database
 
-import java.io.FileInputStream
 import java.time.{LocalDate, LocalDateTime}
-import java.util.Properties
 
 import de.berlin.vivepassion.entities.{Record, Semester, StudyDay}
-import org.scalatest.{BeforeAndAfter, FunSuite}
+import de.berlin.vivepassion.testspecs.VPStatSpec
 
-class DBControllerTest extends FunSuite with BeforeAndAfter {
+class DBControllerTest extends VPStatSpec {
 
-  /** Path of the 'vpstats_test.properties' file. */
-  val testPropertiesPath = "./src/main/resources/vpstats_test.properties"
-  val testProperties: Properties = new Properties()
-  testProperties.load(new FileInputStream(testPropertiesPath))
 
-  val dbTestController: DBController = new DBController(testProperties.getProperty("test_db_url"))
-  val dbTestRepository: DBRepository = new DBRepository(dbTestController)
-
-  before {
-    dbTestController.createDatabase
-    dbTestController.clearAllTables
-  }
-
-  test ("test create course database table") {
-    dbTestController.createCourseTable
+  "The database" should "contain one course after the course table was created and filled" in {
+    dbTestController.createCourseTable()
     dbTestRepository.saveCourse("Introduction to Programming with Java")
-    assert(dbTestRepository.getCourses.length == 1)
+    assert(dbTestRepository.getCourses().length == 1)
   }
 
-  test ("test create study_form database table") {
+  it should "test create study_form database table" in {
     dbTestController.createStudyFormTable
     dbTestRepository.saveStudyForm("Calculate Problem Sets")
     assert(dbTestRepository.getStudyForms.length == 1)
   }
 
-  test ("test create studyForm database table") {
+  it should "test create studyForm database table" in {
     dbTestController.createSemesterTable
     dbTestRepository.saveSemester(
       Semester(0, "SS19", LocalDate.parse("2019-04-04"), LocalDate.parse("2019-10-31")))
     assert(dbTestRepository.getSemesters.length == 1)
   }
 
-  test ("test create study_day database table") {
+  it should "test create study_day database table" in {
     dbTestController.createStudyDayTable
     dbTestRepository.saveStudyDay(StudyDay(0, LocalDate.parse("2019-10-10"), 5, ":)"))
     assert(dbTestRepository.getStudyDays.length == 1)
   }
 
-  test ("test create record database table") {
+  it should "test create record database table" in {
     dbTestController.createRecordTable
     dbTestRepository.saveRecord(Record(0, "Calculate Problem Sets",
       "Introduction to Programming with Java", LocalDateTime.parse("2019-10-10T15:00"),
@@ -55,8 +41,8 @@ class DBControllerTest extends FunSuite with BeforeAndAfter {
     assert(dbTestRepository.getRecords.length == 1)
   }
 
-  test ("test clear all tables") {
-    dbTestController.clearAllTables
+  it should "test clear all tables" in {
+    dbTestController.clearAllTables()
     assert(dbTestRepository.getRecords.isEmpty
       && dbTestRepository.getStudyDays.isEmpty
       && dbTestRepository.getSemesters.isEmpty
@@ -64,8 +50,7 @@ class DBControllerTest extends FunSuite with BeforeAndAfter {
       && dbTestRepository.getStudyForms.isEmpty)
   }
 
-  after {
-    dbTestController.clearAllTables
-  }
+
+  dbTestController.clearAllTables()
 
 }

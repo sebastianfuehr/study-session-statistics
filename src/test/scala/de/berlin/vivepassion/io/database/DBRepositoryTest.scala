@@ -1,33 +1,24 @@
 package de.berlin.vivepassion.io.database
 
-import java.io.FileInputStream
 import java.time.{LocalDate, LocalDateTime}
-import java.util.Properties
 
 import de.berlin.vivepassion.entities.{Record, StudyDay}
-import org.scalatest.{BeforeAndAfter, FunSuite}
+import de.berlin.vivepassion.testspecs.VPStatSpec
 import org.sqlite.SQLiteException
 
-class DBRepositoryTest extends FunSuite with BeforeAndAfter {
+class DBRepositoryTest extends VPStatSpec {
 
-  /** Path of the 'vpstats_test.properties' file. */
-  val testPropertiesPath = "./src/main/resources/vpstats_test.properties"
-  val testProperties: Properties = new Properties()
-  testProperties.load(new FileInputStream(testPropertiesPath))
+  dbTestController.clearAllTables()
 
-  val dbTestController: DBController = new DBController(testProperties.getProperty("test_db_url"))
-  val dbTestRepository: DBRepository = new DBRepository(dbTestController)
 
-  dbTestController.createDatabase
-
-  test ("test try inserting NULL attribute in study_day table") {
+  "The sql lite database" should "throw SQLiteException if a NULL attribute is inserted into the study_day table" in {
     val thrown = intercept[Exception] {
       dbTestRepository.saveStudyDay(StudyDay(0, LocalDate.parse("2019-10-10"), 0, null))
     }
     assert(thrown.isInstanceOf[SQLiteException])
   }
 
-  test ("test inserting NULL attribute in record table") {
+  it should "throw SQLiteException if a NULL attribute is inserted into the record table" in {
     val thrown = intercept[Exception] {
       dbTestRepository.saveRecord(Record(0, null,
         "Introduction to Programming with Java", LocalDateTime.parse("2019-10-10T15:00"),
@@ -36,39 +27,44 @@ class DBRepositoryTest extends FunSuite with BeforeAndAfter {
     assert(thrown.isInstanceOf[SQLiteException])
   }
 
-  test ("test retrieve all study sessions alone") (pending)
 
-  test ("test retrieve all study sessions in a group") (pending)
+  dbTestController.clearAllTables()
 
-  test ("test retrieve all study sessions for a specific day") (pending)
 
-  test ("test retrieve all study sessions of a specific month") (pending)
-
-  test ("test retrieve all study sessions of a specific studyForm") (pending)
-
-  test ("test retrieve all semesters") (pending)
-
-  test ("test retrieve all courses") (pending)
-
-  test ("test retrieve all forms of study") (pending)
-
-  test ("test retrieve all study sessions") (pending)
-
-  test ("test retrieve all study days") (pending)
-
-  test ("test retrieve all study days of a specific studyForm") (pending)
-
-  test ("test retrieve a specific study day") (pending)
-
-  dbTestController.clearAllTables
-
-  test ("test import csv file into database") {
+  "The database" should "contain two courses if a csv file was imported" in {
     dbTestRepository.importCsvIntoDatabase(testProperties.getProperty("test_csv_table_path"), "WS18/19")
     assert(dbTestRepository.getCourses.length == 2)
   }
 
-  after {
-    dbTestController.clearAllTables
+  "The DBRepository" should "retrieve all study sessions alone" in {
+    val resultSet = dbTestRepository.queryDatabaseFor("SELECT * FROM record WHERE alone = 1")
+    val resultList = Record.fromResultSet(resultSet)
+    assert(resultList.length == 5)
   }
+
+  ignore should "test retrieve all study sessions in a group"
+
+  ignore should "test retrieve all study sessions for a specific day"
+
+  ignore should "test retrieve all study sessions of a specific month"
+
+  ignore should "test retrieve all study sessions of a specific studyForm"
+
+  ignore should "test retrieve all semesters"
+
+  ignore should "test retrieve all courses"
+
+  ignore should "test retrieve all forms of study"
+
+  ignore should "test retrieve all study sessions"
+
+  ignore should "test retrieve all study days"
+
+  ignore should "test retrieve all study days of a specific studyForm"
+
+  ignore should "test retrieve a specific study day"
+
+
+  dbTestController.clearAllTables()
 
 }

@@ -25,7 +25,7 @@ class DBRepository(dbController: DBController) {
    * Retrieves all persisted study sessions (record entity) from the database table record.
    * @return List of study sessions.
    */
-  def getRecords: List[Record] = {
+  def getRecords(): List[Record] = {
     val resultSet: ResultSet = queryDatabaseFor("SELECT * FROM record")
     Record.fromResultSet(resultSet)
   }
@@ -34,7 +34,7 @@ class DBRepository(dbController: DBController) {
    * Retrieves all persisted study days from the database table study_day.
    * @return List of study days.
    */
-  def getStudyDays: List[StudyDay] = {
+  def getStudyDays(): List[StudyDay] = {
     val resultSet: ResultSet = queryDatabaseFor("SELECT * FROM study_day")
     StudyDay.fromResultSet(resultSet)
   }
@@ -43,19 +43,19 @@ class DBRepository(dbController: DBController) {
     * Retrieves all persisted study forms from the database table study_form.
     * @return List of study forms.
     */
-  def getStudyForms: List[String] = getNamesFrom("study_form", "form_name")
+  def getStudyForms(): List[String] = getNamesFrom("study_form", "form_name")
 
   /**
    * Retrieves all persisted courses from the database table course.
    * @return List of courses.
    */
-  def getCourses: List[String] = getNamesFrom("course", "course_name")
+  def getCourses(): List[String] = getNamesFrom("course", "course_name")
 
   /**
    * Retrieves all persisted semesters from the database table studyForm.
    * @return List of semesters.
    */
-  def getSemesters: List[String] = getNamesFrom("semester", "semester_name")
+  def getSemesters(): List[String] = getNamesFrom("semester", "semester_name")
 
   /**
    * Retrieves a list of names from a specified table with this column.

@@ -1,20 +1,16 @@
 package de.berlin.vivepassion.io
 
-import java.io.FileInputStream
-import java.util.Properties
+import de.berlin.vivepassion.testspecs.VPStatSpec
 
-import org.scalatest.{BeforeAndAfter, FunSuite}
+class CSVFileLoaderTest extends VPStatSpec {
 
-class CSVFileLoaderTest extends FunSuite with BeforeAndAfter {
+  dbTestController.clearAllTables()
 
-  /** Path of the 'vpstats_test.properties' file. */
-  val testPropertiesPath = "./src/main/resources/vpstats_test.properties"
-  val testProperties: Properties = new Properties()
-  testProperties.load(new FileInputStream(testPropertiesPath))
-
-  test ("test getListOfCSVFile") {
+  "CSVFileLoader" should "load a csv file and return the persisted records as a list" in {
     val list = CSVFileLoader.getListOfCSVFile(testProperties.getProperty("test_csv_table_path"))
-    assert(list.length == 4)
+    assert(list.length == 6)
   }
+
+  dbTestController.clearAllTables()
 
 }

@@ -1,8 +1,8 @@
 package de.berlin.vivepassion.controller
 
-import org.scalatest.{BeforeAndAfter, FunSuite}
+import de.berlin.vivepassion.testspecs.VPStatSpec
 
-class RecordControllerTests extends FunSuite with BeforeAndAfter {
+class RecordControllerTests extends VPStatSpec {
 
   // tests for record companion object ------------------------------------------------------------
 
