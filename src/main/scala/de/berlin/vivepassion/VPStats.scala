@@ -152,7 +152,7 @@ object VPStats extends App {
         form,
         course,
         startTime,
-        null,
+        None,
         0,
         alone,
         comment,
@@ -164,20 +164,26 @@ object VPStats extends App {
     case Some(Config(_, "pause", _, _, _, _, _,_, _, _, _, _)) =>
       val tmpRec = dbRepository.getLastRecord()
       dbRepository.saveRecord(Record(tmpRec.id, tmpRec.form, tmpRec.course, tmpRec.startTime,
-        LocalDateTime.now(), tmpRec.pause, tmpRec.alone, tmpRec.comment, tmpRec.semester))
+        Some(LocalDateTime.now()), tmpRec.pause, tmpRec.alone, tmpRec.comment, tmpRec.semester))
 
 
     case Some(Config(_, "resume", _, _, _, _, _, _, _, _, _, _)) =>
       val tmpRec = dbRepository.getLastRecord()
-      val pauseTime = tmpRec.endTime.until(LocalDateTime.now(), ChronoUnit.MILLIS).toInt
-      dbRepository.saveRecord(Record(tmpRec.id, tmpRec.form, tmpRec.course, tmpRec.startTime,
-        null, tmpRec.pause + pauseTime, tmpRec.alone, tmpRec.comment, tmpRec.semester))
+      tmpRec.endTime match {
+        case Some(endTime) =>
+          val pauseTime = endTime.until(LocalDateTime.now(), ChronoUnit.MILLIS).toInt
+          dbRepository.saveRecord(Record(tmpRec.id, tmpRec.form, tmpRec.course, tmpRec.startTime,
+            None, tmpRec.pause + pauseTime, tmpRec.alone, tmpRec.comment, tmpRec.semester))
+        case None => println("An error occurred!" +
+          s"${if (debugMode) " endTime was not defined when invoking the resume command." else ""}")
+      }
+
 
 
     case Some(Config(_, "stop", _, _, _ , _, _, _, _, _, _, _)) =>
       val tmpRec = dbRepository.getLastRecord()
       val newRecord = Record(tmpRec.id, tmpRec.form, tmpRec.course, tmpRec.startTime,
-        LocalDateTime.now(), tmpRec.pause, tmpRec.alone, tmpRec.comment, tmpRec.semester)
+        Some(LocalDateTime.now()), tmpRec.pause, tmpRec.alone, tmpRec.comment, tmpRec.semester)
       dbRepository.saveRecord(newRecord)
       println(s"Record saved: $newRecord")
 

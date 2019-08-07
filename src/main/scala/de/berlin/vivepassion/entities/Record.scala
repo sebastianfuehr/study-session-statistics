@@ -16,12 +16,12 @@ import de.berlin.vivepassion.io.CSVLearnSessionFormat
   * @param form The form of learning (e.g. doing homework or using flashcards).
   * @param course The university course.
   * @param startTime The time the learn session started.
-  * @param endTime The time the learn session ended.
+  * @param endTime Optional of the time the learn session ended.
   * @param pause The amount of minutes which where used for regeneration, free time etc.
   * @param alone Did one work alone during this learn session or with other students?
   * @param comment What especially has been done during the study session?
   */
-case class Record(id: Long, form: String, course: String, startTime: LocalDateTime, endTime: LocalDateTime,
+case class Record(id: Long, form: String, course: String, startTime: LocalDateTime, endTime: Option[LocalDateTime],
                   pause: Int, alone: Boolean, comment: String, semester: String) {
 
   /**
@@ -31,12 +31,21 @@ case class Record(id: Long, form: String, course: String, startTime: LocalDateTi
   def getDateString: String = startTime.format(Record.dateFormatter)
 
   def getStartTimeString: String = startTime.format(Record.timeFormatter)
-  def getEndTimeString: String = endTime.format(Record.timeFormatter)
+  def getEndTimeString: String = endTime match {
+    case Some(endTime) => endTime.format(Record.timeFormatter)
+    case None          => " - "
+  }
 
   /**
     * @return The length of the learn session in minutes.
     */
-  def getSessionLength: Long = startTime.until(endTime, ChronoUnit.MINUTES) - pause
+  def getSessionLength: Int = {
+    endTime match {
+      case Some(endTime) => (startTime.until(endTime, ChronoUnit.MINUTES) - pause).toInt
+      case None          => // session length until now
+        (startTime.until(LocalDateTime.now(), ChronoUnit.MINUTES) - pause).toInt
+    }
+  }
 
   override def toString: String = {
     s"[$id] $getDateString - $getStartTimeString to $getEndTimeString " +
@@ -107,7 +116,7 @@ object Record extends Entity[Record] {
 
     val semester: String = properties.getProperty("current_semester")
 
-    Record(id, recordString(csv.formColumn), course, startTime, endTime, pause, isAlone, comment, semester)
+    Record(id, recordString(csv.formColumn), course, startTime, Some(endTime), pause, isAlone, comment, semester)
   }
 
   /**
@@ -139,7 +148,7 @@ object Record extends Entity[Record] {
         val comment = resultSet.getString("comment")
         val id = resultSet.getInt("id").toLong
         val semester = resultSet.getString("semester")
-        Record(id, form, course, startTime, endTime, pause, alone, comment, semester)
+        Record(id, form, course, startTime, Some(endTime), pause, alone, comment, semester)
       }
     }.toList
   }

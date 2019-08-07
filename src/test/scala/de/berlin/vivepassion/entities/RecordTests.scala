@@ -9,7 +9,7 @@ class RecordTests extends VPStatSpec {
   val record = Record(0, "Doing homework",
                         "Prog2",
                         LocalDateTime.parse("2007-03-12T15:30:00"),
-                        LocalDateTime.parse("2007-03-12T16:15:00"),
+                        Some(LocalDateTime.parse("2007-03-12T16:15:00")),
                         7, alone = true, "", "SS19")
 
 

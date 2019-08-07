@@ -37,7 +37,7 @@ class DBControllerTest extends VPStatSpec {
     dbTestController.createRecordTable
     dbTestRepository.saveRecord(Record(0, "Calculate Problem Sets",
       "Introduction to Programming with Java", LocalDateTime.parse("2019-10-10T15:00"),
-      LocalDateTime.parse("2019-10-10T15:45"), 5, true, ":-)", "SS19"))
+      Some(LocalDateTime.parse("2019-10-10T15:45")), 5, true, ":-)", "SS19"))
     assert(dbTestRepository.getRecords.length == 1)
   }
 

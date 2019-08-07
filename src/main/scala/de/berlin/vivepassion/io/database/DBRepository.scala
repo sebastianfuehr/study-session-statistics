@@ -128,14 +128,16 @@ class DBRepository(dbController: DBController) {
     val sqlStatement = "INSERT INTO record(" +
       "study_day, form, course, start_time, end_time, pause, alone, comment, semester" +
       ") VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)"
-    val prpstmt = dbController.connect.prepareStatement(sqlStatement)
+    val prpstmt = dbController.connect().prepareStatement(sqlStatement)
     prpstmt.setDate(1, Date.valueOf(record.getDate))
     prpstmt.setString(2, if (record.form == null) null else record.form)
     prpstmt.setString(3, if (record.course == null) null else record.course)
     prpstmt.setInt(4, (Timestamp.valueOf(record.startTime).getTime / 1000).toInt)
 
-    if (record.endTime == null) prpstmt.setNull(5, java.sql.Types.INTEGER)
-    else prpstmt.setInt(5, (Timestamp.valueOf(record.endTime).getTime / 1000).toInt)
+    record.endTime match {
+      case Some(endTime) => prpstmt.setInt(5, (Timestamp.valueOf(endTime).getTime / 1000).toInt)
+      case None          => prpstmt.setNull(5, java.sql.Types.INTEGER)
+    }
 
     prpstmt.setInt(6, record.pause)
     val aloneInt = if (record.alone) 1 else 0

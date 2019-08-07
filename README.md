@@ -3,10 +3,10 @@
 # Study Session Tracker and Statistics Application
 
 This application consists of two main functionality:
-  * It allows the user to track study sessions over the course of a studyForm.
-  * It prints statistics about these study sessions.
+* It allows the user to track study sessions over the course of a studyForm.
+* It prints statistics about these study sessions.
 
-# Quick Start  
+## Quick Start  
 The general format for using the program is `vpstat [command] [options]`.  
 
 The program is in analysing mode by default. This means invoking an option without
@@ -22,21 +22,21 @@ Available commands are:
   stop                     stop the current study session
 ```
 
-# Documentation
-## Global options  
+## Documentation
+### Global options  
 ```
   --help                   prints this usage text
   --version
   --debug                  activate debug messages
 ```
 
-## Options in analyzing mode  
+### Options in analyzing mode  
 ```
   -a, --alone              total study time alone (default)
   -g, --group              total study time in a group
 ```
 
-## Available commands plus options
+### Available commands plus options
 ```
 Command: list [options]
 list all learn sessions
