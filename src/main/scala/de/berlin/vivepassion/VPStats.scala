@@ -6,7 +6,6 @@ import java.time.temporal.ChronoUnit
 import de.berlin.vivepassion.VPSConfiguration.properties
 import de.berlin.vivepassion.controller.StatisticsController
 import de.berlin.vivepassion.entities.Record
-import de.berlin.vivepassion.io.CSVFileLoader
 import de.berlin.vivepassion.io.database.{DBController, DBRepository}
 import scopt.OptionParser
 
@@ -17,8 +16,9 @@ object VPStats extends App {
 
   val dbController: DBController = new DBController(properties.getProperty("db_url"))
   val dbRepository: DBRepository = new DBRepository(dbController)
+  val statsController: StatisticsController = new StatisticsController(dbRepository)
 
-  dbController.createDatabase
+  dbController.createDatabase()
 
   val testTablePath: String = "./src/main/resources/tables/Studiumsorganisation_Semester_3.csv"
 
@@ -111,7 +111,7 @@ object VPStats extends App {
                 .debug
   if (debugMode) println("Debug mode active")
 
-  val learnSessions = CSVFileLoader.getListOfCSVFile(testTablePath)
+  val learnSessions = dbRepository.getRecords()
 
   parser.parse(args, Config()) match { // parse the user input
 
@@ -119,7 +119,7 @@ object VPStats extends App {
       config match {
         case Some(Config(_, _, aloneBoolean, _, _, _ , _, _, _, _, _, _)) =>
           println(s"Learn time ${if (aloneBoolean) "alone" else "in a group"}: " +
-            s"${StatisticsController.getLearningTimeAlone(VPStats.learnSessions, aloneBoolean)} h")
+            s"${statsController.getLearningTimeAlone(aloneBoolean)} h")
       }
 
 

@@ -40,14 +40,14 @@ case class Record(id: Long, form: String, course: String, startTime: LocalDateTi
 
   override def toString: String = {
     s"[$id] $getDateString - $getStartTimeString to $getEndTimeString " +
-      s"| $getSessionLength min | " +
+      s"| $getSessionLength min (- $pause min) | " +
       s"${if (alone) VPSConfiguration.langProps.getProperty("alone")
       else VPSConfiguration.langProps.getProperty("group")}, " +
       s"$course, $form, ${if (comment.length > 0) comment else "-"}"
   }
 
 }
-object Record {
+object Record extends Entity[Record] {
 
   val properties: Properties = new Properties()
   properties.load(new FileInputStream(VPSConfiguration.propertiesPath))
@@ -121,10 +121,10 @@ object Record {
 
   /**
    * Converts a java ResultSet into a scala List[Record].
-   * @param resultSet ResultSet to convert.
-   * @return List of records.
+   * @param resultSet ResultSet to convert
+   * @return List of records
    */
-  def fromResultSet(resultSet: ResultSet): List[Record] = {
+  override def fromResultSet(resultSet: ResultSet): List[Record] = {
     new Iterator[Record] { // https://stackoverflow.com/questions/9636545/treating-an-sql-resultset-like-a-scala-stream
       def hasNext = resultSet.next()
       def next() = { // here a typecast happens

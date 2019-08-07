@@ -15,9 +15,9 @@ class DBControllerTest extends VPStatSpec {
   }
 
   it should "test create study_form database table" in {
-    dbTestController.createStudyFormTable
+    dbTestController.createStudyFormTable()
     dbTestRepository.saveStudyForm("Calculate Problem Sets")
-    assert(dbTestRepository.getStudyForms.length == 1)
+    assert(dbTestRepository.getStudyForms().length == 1)
   }
 
   it should "test create studyForm database table" in {
