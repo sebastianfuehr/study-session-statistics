@@ -46,9 +46,9 @@ class DBRepositoryTest extends VPStatSpec with BeforeAndAfterAll {
 
   it should "throw SQLiteException if a NULL attribute is inserted into the record table" in {
     val thrown = intercept[Exception] {
-      dbTestRepository.saveRecord(Record(0, null,
-        "Introduction to Programming with Java", LocalDateTime.parse("2019-10-10T15:00"),
-        Some(LocalDateTime.parse("2019-10-10T15:45")), 5, true, ":-)", "SS19"))
+      dbTestRepository.saveRecord(Record(0, None,
+        Some("Introduction to Programming with Java"), LocalDateTime.parse("2019-10-10T15:00"),
+        Some(LocalDateTime.parse("2019-10-10T15:45")), 5, true, Some(":-)"), "SS19"))
     }
     assert(thrown.isInstanceOf[SQLiteException])
   }

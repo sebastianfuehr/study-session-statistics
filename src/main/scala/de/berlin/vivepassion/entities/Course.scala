@@ -8,9 +8,7 @@ import java.sql.ResultSet
  * @param id Id of the course in the database.
  * @param name Name of the course.
  */
-case class Course(id: Long, name: String) {
-  //TODO add ects points, description, professor
-}
+case class Course(id: Long, name: String) //TODO add ects points, description, professor
 object Course extends Entity[Course] {
 
   /**

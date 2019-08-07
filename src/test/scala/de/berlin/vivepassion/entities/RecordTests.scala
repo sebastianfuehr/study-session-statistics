@@ -6,11 +6,11 @@ import de.berlin.vivepassion.testspecs.VPStatSpec
 
 class RecordTests extends VPStatSpec {
 
-  val record = Record(0, "Doing homework",
-                        "Prog2",
+  val record = Record(0, Some("Doing homework"),
+                        Some("Prog2"),
                         LocalDateTime.parse("2007-03-12T15:30:00"),
                         Some(LocalDateTime.parse("2007-03-12T16:15:00")),
-                        7, alone = true, "", "SS19")
+                        7, alone = true, None, "SS19")
 
 
   "A record" should "return a date as a string in the right format" in {

@@ -149,13 +149,13 @@ object VPStats extends App {
       val startTime: LocalDateTime = if (startTimeString == "") LocalDateTime.now()
       else LocalDateTime.parse(startTimeString, Record.dateTimeFormatter)
       val newRecord = Record(-1,
-        form,
-        course,
+        Some(form),
+        Some(course),
         startTime,
         None,
         0,
         alone,
-        comment,
+        Some(comment),
         semester)
       dbRepository.saveRecord(newRecord)
       println(s"Study session started at ${newRecord.getStartTimeString}")

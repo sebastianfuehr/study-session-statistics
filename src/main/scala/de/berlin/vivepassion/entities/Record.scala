@@ -13,16 +13,23 @@ import de.berlin.vivepassion.io.CSVLearnSessionFormat
 /**
   * Entity class to describe a study session.
   * @param id Identifier of the specific record entity in the database.
-  * @param form The form of learning (e.g. doing homework or using flashcards).
-  * @param course The university course.
+  * @param form Optional of the form of learning (e.g. doing homework or using flashcards).
+  * @param course Optional of the university course.
   * @param startTime The time the learn session started.
   * @param endTime Optional of the time the learn session ended.
   * @param pause The amount of minutes which where used for regeneration, free time etc.
-  * @param alone Did one work alone during this learn session or with other students?
-  * @param comment What especially has been done during the study session?
+  * @param alone Did one work alone{if (comment.length > 0) comment else "-"} during this learn session or with other students?
+  * @param comment Optional of a comment: What especially has been done during the study session?
   */
-case class Record(id: Long, form: String, course: String, startTime: LocalDateTime, endTime: Option[LocalDateTime],
-                  pause: Int, alone: Boolean, comment: String, semester: String) {
+case class Record(id: Long,
+                  form: Option[String],
+                  course: Option[String],
+                  startTime: LocalDateTime,
+                  endTime: Option[LocalDateTime],
+                  pause: Int,
+                  alone: Boolean,
+                  comment: Option[String],
+                  semester: String) {
 
   /**
     * @return The date of the learn session.
@@ -34,6 +41,27 @@ case class Record(id: Long, form: String, course: String, startTime: LocalDateTi
   def getEndTimeString: String = endTime match {
     case Some(endTime) => endTime.format(Record.timeFormatter)
     case None          => " - "
+  }
+
+  def getCommentString(): String = {
+    comment match {
+      case Some(comment) => comment
+      case None          => "-"
+    }
+  }
+
+  def getStudyFormString(): String = {
+    form match {
+      case Some(form) => form
+      case None       => " - "
+    }
+  }
+
+  def getCourseString(): String = {
+    course match {
+      case Some(course) => course
+      case None         => " - "
+    }
   }
 
   /**
@@ -52,7 +80,7 @@ case class Record(id: Long, form: String, course: String, startTime: LocalDateTi
       s"| $getSessionLength min (- $pause min) | " +
       s"${if (alone) VPSConfiguration.langProps.getProperty("alone")
       else VPSConfiguration.langProps.getProperty("group")}, " +
-      s"$course, $form, ${if (comment.length > 0) comment else "-"}"
+      s"$course, $form, ${getCommentString()}"
   }
 
 }
@@ -116,7 +144,15 @@ object Record extends Entity[Record] {
 
     val semester: String = properties.getProperty("current_semester")
 
-    Record(id, recordString(csv.formColumn), course, startTime, Some(endTime), pause, isAlone, comment, semester)
+    Record(id,
+      Some(recordString(csv.formColumn)),
+      Some(course),
+      startTime,
+      Some(endTime),
+      pause,
+      isAlone,
+      Some(comment),
+      semester)
   }
 
   /**
@@ -148,7 +184,7 @@ object Record extends Entity[Record] {
         val comment = resultSet.getString("comment")
         val id = resultSet.getInt("id").toLong
         val semester = resultSet.getString("semester")
-        Record(id, form, course, startTime, Some(endTime), pause, alone, comment, semester)
+        Record(id, Some(form), Some(course), startTime, Some(endTime), pause, alone, Some(comment), semester)
       }
     }.toList
   }

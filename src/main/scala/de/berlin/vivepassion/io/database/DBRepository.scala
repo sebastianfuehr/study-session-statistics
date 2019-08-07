@@ -17,7 +17,7 @@ class DBRepository(dbController: DBController) {
 
   /** Executes a query on the database and returns the results as a ResultSet. */
   def queryDatabaseFor(sqlStatement: String): ResultSet = {
-    dbController.connect.createStatement.executeQuery(sqlStatement);
+    dbController.connect().createStatement.executeQuery(sqlStatement);
   }
 
   // get entities methods --------------------------------------------------------------
@@ -26,7 +26,8 @@ class DBRepository(dbController: DBController) {
    * @return List of study sessions.
    */
   def getRecords(): List[Record] = {
-    val resultSet: ResultSet = queryDatabaseFor("SELECT * FROM record")
+    val sqlStatement = "SELECT id, form, course, start_time, end_time, pause, alone, comment, semester FROM record"
+    val resultSet: ResultSet = queryDatabaseFor(sqlStatement)
     Record.fromResultSet(resultSet)
   }
 
@@ -77,7 +78,7 @@ class DBRepository(dbController: DBController) {
    */
   def saveStudyForm(form: String): Unit = {
     val sqlStatement = "INSERT INTO study_form(form_name) VALUES(?)"
-    val prpstmt = dbController.connect.prepareStatement(sqlStatement)
+    val prpstmt = dbController.connect().prepareStatement(sqlStatement)
     prpstmt.setString(1, form)
     prpstmt.executeUpdate
   }
@@ -99,7 +100,7 @@ class DBRepository(dbController: DBController) {
    */
   def saveSemester(semester: Semester): Unit = {
     val sqlStatement = "INSERT INTO semester(semester_name, start_date, end_date) VALUES(?, ? ,?)"
-    val prpstmt = dbController.connect.prepareStatement(sqlStatement)
+    val prpstmt = dbController.connect().prepareStatement(sqlStatement)
     prpstmt.setString(1, semester.name)
     prpstmt.setDate(2, Date.valueOf(semester.start))
     prpstmt.setDate(3, Date.valueOf(semester.end))
@@ -112,7 +113,7 @@ class DBRepository(dbController: DBController) {
    */
   def saveStudyDay(studyDay: StudyDay): Unit = {
     val sqlStatement = "INSERT INTO study_day(date, to_do, comment) VALUES(?, ?, ?)"
-    val prpstmt = dbController.connect.prepareStatement(sqlStatement)
+    val prpstmt = dbController.connect().prepareStatement(sqlStatement)
     prpstmt.setDate(1, Date.valueOf(studyDay.date))
     prpstmt.setInt(2, studyDay.plannedStudyTime)
     prpstmt.setString(3, studyDay.comment)
@@ -130,8 +131,17 @@ class DBRepository(dbController: DBController) {
       ") VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)"
     val prpstmt = dbController.connect().prepareStatement(sqlStatement)
     prpstmt.setDate(1, Date.valueOf(record.getDate))
-    prpstmt.setString(2, if (record.form == null) null else record.form)
-    prpstmt.setString(3, if (record.course == null) null else record.course)
+
+    record.form match {
+      case Some(form) => prpstmt.setString(2, form)
+      case None       => prpstmt.setNull(2, java.sql.Types.VARCHAR)
+    }
+
+    record.course match {
+      case Some(course) => prpstmt.setString(3, course)
+      case None         => prpstmt.setNull(3, java.sql.Types.VARCHAR)
+    }
+
     prpstmt.setInt(4, (Timestamp.valueOf(record.startTime).getTime / 1000).toInt)
 
     record.endTime match {
@@ -142,13 +152,19 @@ class DBRepository(dbController: DBController) {
     prpstmt.setInt(6, record.pause)
     val aloneInt = if (record.alone) 1 else 0
     prpstmt.setInt(7, aloneInt)
-    prpstmt.setString(8, record.comment)
+
+    record.comment match {
+      case Some(comment) => prpstmt.setString(8, comment)
+      case None          => prpstmt.setNull(8, java.sql.Types.VARCHAR)
+    }
+
     prpstmt.setString(9, record.semester)
     prpstmt.execute()
   }
 
   def getLastRecord(): Record = {
-    val resultList = Record.fromResultSet(queryDatabaseFor("SELECT * FROM record"))
+    val sqlStatement = "SELECT id, form, course, start_time, end_time, pause, alone, comment, semester FROM record"
+    val resultList = Record.fromResultSet(queryDatabaseFor(sqlStatement))
     resultList.reduce((acc, elem) => if (elem.startTime.isAfter(acc.startTime)) elem else acc)
   }
 
@@ -168,8 +184,14 @@ class DBRepository(dbController: DBController) {
     saveSemester(Semester(-1, semesterName, firstDay, lastDay))
 
     for (element <- list) {
-      courseController.createCourseIfNotExists(element.course)
-      studyFormController.createStudyFormIfNotExists(element.form)
+      element.course match {
+        case Some(course) => courseController.createCourseIfNotExists(course)
+        case None         => // do nothing
+      }
+      element.form match {
+        case Some(form) => studyFormController.createStudyFormIfNotExists(form)
+        case None       => // do nothing
+      }
       saveRecord(element)
     }
   }

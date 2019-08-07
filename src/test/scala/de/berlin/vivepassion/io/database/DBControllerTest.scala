@@ -35,9 +35,9 @@ class DBControllerTest extends VPStatSpec {
 
   it should "test create record database table" in {
     dbTestController.createRecordTable
-    dbTestRepository.saveRecord(Record(0, "Calculate Problem Sets",
-      "Introduction to Programming with Java", LocalDateTime.parse("2019-10-10T15:00"),
-      Some(LocalDateTime.parse("2019-10-10T15:45")), 5, true, ":-)", "SS19"))
+    dbTestRepository.saveRecord(Record(0, Some("Calculate Problem Sets"),
+      Some("Introduction to Programming with Java"), LocalDateTime.parse("2019-10-10T15:00"),
+      Some(LocalDateTime.parse("2019-10-10T15:45")), 5, true, Some(":-)"), "SS19"))
     assert(dbTestRepository.getRecords.length == 1)
   }
 

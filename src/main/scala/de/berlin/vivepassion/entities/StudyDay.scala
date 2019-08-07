@@ -10,9 +10,7 @@ import java.time.{Instant, LocalDate, ZoneId}
  * @param plannedStudyTime The planned study time.
  * @param comment An optional comment about what is planned or what has been done at that day.
  */
-case class StudyDay(id: Long, date: LocalDate, plannedStudyTime: Int, comment: String) {
-
-}
+case class StudyDay(id: Long, date: LocalDate, plannedStudyTime: Int, comment: String)
 object StudyDay {
 
   /**

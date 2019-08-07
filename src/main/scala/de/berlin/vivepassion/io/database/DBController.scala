@@ -25,13 +25,13 @@ class DBController(dbUrl: String) {
     val sqlStatement: String = "CREATE TABLE IF NOT EXISTS record (\n" +
       "id INTEGER PRIMARY KEY, \n" +
       "study_day INTEGER NOT NULL, \n" +
-      "form TEXT NOT NULL, \n" +
-      "course TEXT NOT NULL, \n" +
+      "form TEXT, \n" +
+      "course TEXT, \n" +
       "start_time INTEGER NOT NULL, \n" +
       "end_time INTEGER, \n" +
       "pause INTEGER NOT NULL, \n" +
       "alone INTEGER NOT NULL, \n" +
-      "comment TEXT NOT NULL, \n" +
+      "comment TEXT, \n" +
       "semester TEXT NOT NULL, \n" +
       "FOREIGN KEY(study_day) REFERENCES study_day(date), \n" +
       "FOREIGN KEY(form) REFERENCES study_form(form_name), \n" +

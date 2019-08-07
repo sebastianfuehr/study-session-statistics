@@ -8,7 +8,7 @@ import java.sql.ResultSet
  * @param id Id of the study form in the database.
  * @param name Name of the study form (e.g. 'doing homework' or 'memorize flashcards').
  */
-case class StudyForm(id: Long, name: String) {}
+case class StudyForm(id: Long, name: String)
 object StudyForm extends Entity[StudyForm] {
 
   /**

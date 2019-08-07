@@ -11,9 +11,7 @@ import java.time.{Instant, LocalDate, ZoneId}
  * @param start Date of the first day of the semester.
  * @param end Date of the last day of the semester.
  */
-case class Semester(id: Long, name: String, start: LocalDate, end: LocalDate) {
-
-}
+case class Semester(id: Long, name: String, start: LocalDate, end: LocalDate)
 object Semester extends Entity[Semester] {
 
   /**
