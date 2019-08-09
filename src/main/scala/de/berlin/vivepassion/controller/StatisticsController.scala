@@ -39,15 +39,28 @@ class StatisticsController(dbRepository: DBRepository) {
   }
 
   /**
-    * Calculates the average learning time per day.
+    * Calculates the average learning time per day in minutes.
     * @return Double value which represents the average learning time per day.
     */
   def getAverageLearningTime(): Double = {
     val list = dbRepository.getRecords()
-    BigDecimal(list.groupBy(r => r.getDate)
+    val result = list.groupBy(r => r.getDate)
       .foldLeft(0)(
-        (acc, r) => acc + r._2.foldLeft(0)((acc, r2) => acc + r2.getSessionLength.toInt)
-      ) / list.groupBy(r => r.getDate).size.toDouble).setScale(2, BigDecimal.RoundingMode.HALF_UP).toDouble
+        (acc, r) => acc + r._2.foldLeft(0)((acc, r2) => acc + r2.getSessionLength)
+      ).toDouble
+    val amtDays = list.groupBy(r => r.getDate).size
+    result / amtDays
+  }
+
+  /**
+   * Calculates the average learning time per day in minutes done alone or in a group.
+   * @param alone Average learning time alone or in a group.
+   * @return Double value which represents the average learning time per day done alone or in a group.
+   */
+  def getAverageLearningTimeAlone(alone: Boolean): Double = {
+    val result = getLearningTimeAlone(alone) * 60
+    val amtDays = dbRepository.getRecords().filter(r => r.alone).groupBy(r => r.getDate).size
+    result / amtDays
   }
 
   /**
@@ -57,12 +70,11 @@ class StatisticsController(dbRepository: DBRepository) {
     */
   def getLearningTimeAlone(alone: Boolean): Double = {
     val list = dbRepository.getRecords()
-    BigDecimal(list
+    val result = list
       .filter(r => r.alone == alone)
       .map(r => r.getSessionLength)
-      .sum / 60)
-      .setScale(2, BigDecimal.RoundingMode.HALF_UP)
-      .toDouble
+      .sum.toDouble
+    result / 60
   }
 
   /**
@@ -73,12 +85,11 @@ class StatisticsController(dbRepository: DBRepository) {
     */
   def getLearningTimeForDate(date: LocalDate): Double = {
     val list = dbRepository.getRecords()
-    BigDecimal(list
+    val result = list
       .filter(r => r.getDate.equals(date))
       .map(r => r.getSessionLength)
-      .sum / 60.0)
-      .setScale(2, BigDecimal.RoundingMode.HALF_UP)
-      .toDouble
+      .sum
+    BigDecimal(result / 60).setScale(2, BigDecimal.RoundingMode.HALF_UP).toDouble
   }
 
 }
