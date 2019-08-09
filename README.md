@@ -1,4 +1,5 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/39e4bc19d5fa426a945ab2d285baebbd)](https://www.codacy.com/app/KrokodileDandy/study-session-statistics?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=KrokodileDandy/study-session-statistics&amp;utm_campaign=Badge_Grade)
+[![Coverage Status](https://coveralls.io/repos/github/KrokodileDandy/study-session-statistics/badge.svg?branch=master)](https://coveralls.io/github/KrokodileDandy/study-session-statistics?branch=master)
 
 # Study Session Tracker and Statistics Application
 
