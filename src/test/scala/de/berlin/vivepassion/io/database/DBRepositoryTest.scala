@@ -1,11 +1,8 @@
 package de.berlin.vivepassion.io.database
 
-import java.time.{LocalDate, LocalDateTime}
-
-import de.berlin.vivepassion.entities.{Course, Record, Semester, StudyDay, StudyForm}
+import de.berlin.vivepassion.entities.{Course, Record, Semester, StudyForm}
 import de.berlin.vivepassion.testspecs.VPStatSpec
 import org.scalatest.BeforeAndAfterAll
-import org.sqlite.SQLiteException
 
 class DBRepositoryTest extends VPStatSpec with BeforeAndAfterAll {
 
@@ -37,30 +34,18 @@ class DBRepositoryTest extends VPStatSpec with BeforeAndAfterAll {
 
 
 
-  "The sql lite database" should "throw SQLiteException if a NULL attribute is inserted into the study_day table" in {
-    val thrown = intercept[Exception] {
-      dbTestRepository.saveStudyDay(StudyDay(0, LocalDate.parse("2019-10-10"), 0, null))
-    }
-    assert(thrown.isInstanceOf[SQLiteException])
-  }
-
-  it should "throw SQLiteException if a NULL attribute is inserted into the record table" in {
-    val thrown = intercept[Exception] {
-      dbTestRepository.saveRecord(Record(0, None,
-        Some("Introduction to Programming with Java"), LocalDateTime.parse("2019-10-10T15:00"),
-        Some(LocalDateTime.parse("2019-10-10T15:45")), 5, true, Some(":-)"), "SS19"))
-    }
-    assert(thrown.isInstanceOf[SQLiteException])
-  }
-
-  it should "retrieve all study sessions alone" in {
-    val resultSet = dbTestRepository.queryDatabaseFor("SELECT * FROM record WHERE alone = 1")
+  "The SQLite database" should "retrieve all study sessions alone" in {
+    val sqlStatement = "SELECT id, form, course, start_time, end_time, pause, alone, comment, semester FROM record " +
+      "WHERE alone = 1"
+    val resultSet = dbTestRepository.queryDatabaseFor(sqlStatement)
     val resultList = Record.fromResultSet(resultSet)
     assert(resultList.length === 5)
   }
 
   it should "retrieve all study sessions in a group" in {
-    val resultSet = dbTestRepository.queryDatabaseFor("SELECT * FROM record WHERE alone = 0")
+    val sqlStatement = "SELECT id, form, course, start_time, end_time, pause, alone, comment, semester FROM record " +
+      "WHERE alone = 0"
+    val resultSet = dbTestRepository.queryDatabaseFor(sqlStatement)
     val resultList = Record.fromResultSet(resultSet)
     assert(resultList.length === 1)
   }

@@ -14,6 +14,12 @@ class StatisticsControllerTest extends VPStatSpec with BeforeAndAfterAll {
 
   "The StatisticsController" should "calculate the complete learning time alone" in {
     val statsTestController = new StatisticsController(dbTestRepository)
+    val list = dbTestRepository.getRecords()
+    var sum = 0
+    for (element <- list) {
+      if (element.alone) sum += element.getSessionLength
+    }
+    println(s"Expected result: ${sum / list.length} with a sum of $sum and a length of ${list.length}")
     assert(statsTestController.getLearningTimeAlone(alone = true) === 5.33)
   }
 

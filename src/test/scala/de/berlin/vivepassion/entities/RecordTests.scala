@@ -18,7 +18,48 @@ class RecordTests extends VPStatSpec {
   }
 
   it should "calculate the right session lengths" in {
-    assert(record.getSessionLength === 38)
+    val rec = Record(0, Some("Doing homework"), Some("Prog2"), LocalDateTime.parse("2007-03-12T16:00"),
+                Some(LocalDateTime.parse("2007-03-12T16:45")), 0, alone = true, None, "SS19")
+    assert(rec.getSessionLength === 45)
+  }
+
+  it should "calculate the right session lengths with pause" in {
+    val rec = Record(0, Some("Doing homework"), Some("Prog2"), LocalDateTime.parse("2007-03-12T16:00"),
+      Some(LocalDateTime.parse("2007-03-12T16:45")), 15, alone = true, None, "SS19")
+    assert(rec.getSessionLength === 30)
+  }
+
+  it should "calculate the right session lengths over an hour gap" in {
+    val rec = Record(0, Some("Doing homework"), Some("Prog2"), LocalDateTime.parse("2007-03-12T16:45"),
+      Some(LocalDateTime.parse("2007-03-12T17:10")), 0, alone = true, None, "SS19")
+    assert(rec.getSessionLength === 25)
+  }
+
+  it should "calculate the right session lengths over an hour gap with pause" in {
+    val rec = Record(0, Some("Doing homework"), Some("Prog2"), LocalDateTime.parse("2007-03-12T16:45"),
+      Some(LocalDateTime.parse("2007-03-12T17:10")), 7, alone = true, None, "SS19")
+    assert(rec.getSessionLength === 18)
+  }
+
+  it should "calculate the right session lengths over a day gap" in {
+    val rec = Record(0, Some("Doing homework"), Some("Prog2"), LocalDateTime.parse("2007-03-12T23:30"),
+      Some(LocalDateTime.parse("2007-03-13T00:45")), 0, alone = true, None, "SS19")
+    assert(rec.getSessionLength === 75)
+  }
+
+  it should "calculate the right session lengths over a day gap with pause" in {
+    val rec = Record(0, Some("Doing homework"), Some("Prog2"), LocalDateTime.parse("2007-03-12T23:30"),
+      Some(LocalDateTime.parse("2007-03-13T00:45")), 14, alone = true, None, "SS19")
+    assert(rec.getSessionLength === 61)
+  }
+
+  it should "throw an exception if the end time would be before the start time of the session" in {
+    val thrown = intercept[Exception] {
+      Record(0, Some("Doing homework"), Some("Prog2"), LocalDateTime.parse("2007-03-12T16:00"),
+        Some(LocalDateTime.parse("2007-03-12T15:45")), 0, alone = true, None, "SS19")
+    }
+    assert(thrown.isInstanceOf[IllegalArgumentException])
+    assert(thrown.getMessage === "requirement failed: An end time can't be before start time!")
   }
 
   it should "have a toString() method which returns a string in the right format" in {

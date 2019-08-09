@@ -30,6 +30,14 @@ case class Record(id: Long,
                   alone: Boolean,
                   comment: Option[String],
                   semester: String) {
+  require({
+    endTime match {
+      case Some(endTime) =>
+        if (endTime.isBefore(startTime)) false
+        else true
+      case None          => true
+    }
+  }, "An end time can't be before start time!")
 
   /**
     * @return The date of the learn session.
@@ -60,7 +68,7 @@ case class Record(id: Long,
   def getCourseString(): String = {
     course match {
       case Some(course) => course
-      case None         => " - "
+      case None         => " -"
     }
   }
 
@@ -80,7 +88,7 @@ case class Record(id: Long,
       s"| $getSessionLength min (- $pause min) | " +
       s"${if (alone) VPSConfiguration.langProps.getProperty("alone")
       else VPSConfiguration.langProps.getProperty("group")}, " +
-      s"$course, $form, ${getCommentString()}"
+      s"${getCourseString()}, ${getStudyFormString()}, ${getCommentString()}"
   }
 
 }
@@ -140,7 +148,9 @@ object Record extends Entity[Record] {
 
     val course = recordString(csv.courseColumn)
 
-    val comment: String = recordString(csv.commentColumn)
+    val comment: Option[String] =
+      if (recordString(csv.commentColumn).isEmpty) None
+      else Some(recordString(csv.commentColumn))
 
     val semester: String = properties.getProperty("current_semester")
 
@@ -151,7 +161,7 @@ object Record extends Entity[Record] {
       Some(endTime),
       pause,
       isAlone,
-      Some(comment),
+      comment,
       semester)
   }
 
@@ -175,9 +185,9 @@ object Record extends Entity[Record] {
       def next() = { // here a typecast happens
         val form = resultSet.getString("form")
         val course = resultSet.getString("course")
-        val startTime = Instant.ofEpochMilli(resultSet.getInt("start_time").toLong)
+        val startTime = Instant.ofEpochSecond(resultSet.getInt("start_time").toLong)
           .atZone(ZoneId.systemDefault()).toLocalDateTime
-        val endTime = Instant.ofEpochMilli(resultSet.getInt("end_time").toLong)
+        val endTime = Instant.ofEpochSecond(resultSet.getInt("end_time").toLong)
           .atZone(ZoneId.systemDefault()).toLocalDateTime
         val pause = resultSet.getInt("pause")
         val alone = resultSet.getInt("alone") == 1
