@@ -36,8 +36,8 @@ object StudyDay extends EntityObjectInterface[StudyDay] {
   @Override
   override def resultSetToList(resultSet: ResultSet): List[StudyDay] = {
     new Iterator[StudyDay] { // https://stackoverflow.com/questions/9636545/treating-an-sql-resultset-like-a-scala-stream
-      def hasNext = resultSet.next()
-      def next() = { // here a typecast happens
+      def hasNext: Boolean = resultSet.next()
+      def next(): StudyDay = { // here a typecast happens
         val id = resultSet.getInt("id").toLong
         val date = Instant.ofEpochMilli(resultSet.getString("date").toLong).atZone(ZoneId.systemDefault()).toLocalDate
         val todoTime = resultSet.getInt("to_do")

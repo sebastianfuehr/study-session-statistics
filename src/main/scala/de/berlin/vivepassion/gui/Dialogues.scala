@@ -33,6 +33,6 @@ object Dialogues {
     val endDate: LocalDate = LocalDate.parse(endDateStr, dateFormatter)
 
     Semester(-1, name, startDate, endDate)
-  }
+  } // ----- End of createSemesterDialogue(name: String)
 
 }

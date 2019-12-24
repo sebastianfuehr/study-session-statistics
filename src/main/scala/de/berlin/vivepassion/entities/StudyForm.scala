@@ -28,8 +28,8 @@ object StudyForm extends EntityObjectInterface[StudyForm] {
   @Override
   override def resultSetToList(resultSet: ResultSet): List[StudyForm] = {
     new Iterator[StudyForm] { // https://stackoverflow.com/questions/9636545/treating-an-sql-resultset-like-a-scala-stream
-      def hasNext = resultSet.next()
-      def next: StudyForm = { // here a typecast happens
+      def hasNext: Boolean = resultSet.next()
+      def next(): StudyForm = { // here a typecast happens
         val name = resultSet.getString("FORM_NAME")
         val id = resultSet.getLong("ID")
         StudyForm(id, name)

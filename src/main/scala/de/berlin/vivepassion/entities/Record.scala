@@ -53,21 +53,21 @@ case class Record(id: Long,
     case None          => " - "
   }
 
-  def getCommentString(): String = {
+  def getCommentString: String = {
     comment match {
       case Some(comment) => comment
       case None          => "-"
     }
   }
 
-  def getStudyFormString(): String = {
+  def getStudyFormString: String = {
     form match {
       case Some(form) => form
       case None       => "-"
     }
   }
 
-  def getCourseString(): String = {
+  def getCourseString: String = {
     course match {
       case Some(course) => course
       case None         => "-"
@@ -85,12 +85,14 @@ case class Record(id: Long,
     }
   }
 
+  /** @return Returns a string representation of the study session. */
+  @Override
   override def toString: String = {
     s"[$id] $getDateString - $getStartTimeString to $getEndTimeString " +
       s"| $getSessionLength min (- $pause min) | " +
       s"${if (alone) VPSConfiguration.langProps.getProperty("alone")
       else VPSConfiguration.langProps.getProperty("group")}, " +
-      s"${getCourseString()}, ${getStudyFormString()}, ${getCommentString()}"
+      s"$getCourseString, $getStudyFormString, $getCommentString"
   }
 
   /**
@@ -99,6 +101,7 @@ case class Record(id: Long,
    */
   @Override
   override def getEntityClass: Record = this
+
 }
 object Record extends EntityObjectInterface[Record] {
 
@@ -189,8 +192,8 @@ object Record extends EntityObjectInterface[Record] {
   @Override
   override def resultSetToList(resultSet: ResultSet): List[Record] = {
     new Iterator[Record] { // https://stackoverflow.com/questions/9636545/treating-an-sql-resultset-like-a-scala-stream
-      def hasNext = resultSet.next()
-      def next() = { // here a typecast happens
+      def hasNext: Boolean = resultSet.next()
+      def next(): Record = { // here a typecast happens
         val form = resultSet.getString("form")
         val course = resultSet.getString("course")
         val startTime = Instant.ofEpochSecond(resultSet.getInt("start_time").toLong)
@@ -199,7 +202,8 @@ object Record extends EntityObjectInterface[Record] {
           .atZone(ZoneId.systemDefault()).toLocalDateTime
         val pause = resultSet.getInt("pause")
         val alone = resultSet.getInt("alone") == 1
-        val comment = if (resultSet.getString("comment") == null) None else Some(resultSet.getString("comment"))
+        //val comment = if (resultSet.getString("comment") == null) None else Some(resultSet.getString("comment"))
+        val comment = Option(resultSet.getString("comment"))
         val id = resultSet.getInt("id").toLong
         val semester = resultSet.getString("semester")
         Record(id, Some(form), Some(course), startTime, Some(endTime), pause, alone, comment, semester)

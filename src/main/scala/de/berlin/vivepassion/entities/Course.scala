@@ -31,8 +31,8 @@ object Course extends EntityObjectInterface[Course] {
   @Override
   override def resultSetToList(resultSet: ResultSet): List[Course] = {
     new Iterator[Course] { // https://stackoverflow.com/questions/9636545/treating-an-sql-resultset-like-a-scala-stream
-      def hasNext = resultSet.next()
-      def next() = { // here a typecast happens
+      def hasNext: Boolean = resultSet.next()
+      def next(): Course = { // here a typecast happens
         val name = resultSet.getString("course_name")
         val id = resultSet.getLong("id")
         Course(id, name)
