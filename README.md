@@ -4,7 +4,7 @@
 # Study Session Tracker and Statistics Application
 
 This application consists of two main functionality:
-* It allows the user to track study sessions over the course of a studyForm.
+* It allows the user to track study sessions over the course of a studyFormName.
 * It prints statistics about these study sessions.
 
 ## Quick Start  
@@ -50,7 +50,7 @@ start a new study session
   -c, --course <value>     university course
   -b, --begin <value>      override the begin time of the study session
   -c, --comment <value>    optional comment for the study session
-  --studyForm <value>      the studyForm of the study session (if not given, the last studyForm of the last registered studyForm is used)
+  --studyFormName <value>      the studyFormName of the study session (if not given, the last studyFormName of the last registered studyFormName is used)
 
 Command: pause
 pause the current study session

@@ -1,14 +1,13 @@
 package de.berlin.vivepassion.entities
 
-import java.io.FileInputStream
 import java.sql.ResultSet
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.time.{Instant, LocalDate, LocalDateTime, ZoneId}
 import java.util.Properties
 
-import de.berlin.vivepassion.{VPSConfiguration, VPStats}
 import de.berlin.vivepassion.io.CSVLearnSessionFormat
+import de.berlin.vivepassion.{VPSConfiguration, VPStats}
 
 /**
   * Entity class to describe a study session.
@@ -20,6 +19,9 @@ import de.berlin.vivepassion.io.CSVLearnSessionFormat
   * @param pause The amount of minutes which where used for regeneration, free time etc.
   * @param alone Did one work alone{if (comment.length > 0) comment else "-"} during this learn session or with other students?
   * @param comment Optional of a comment: What especially has been done during the study session?
+  *
+  * @author Sebastian Führ
+  * @version 0.1
   */
 case class Record(id: Long,
                   form: Option[String],
@@ -29,7 +31,7 @@ case class Record(id: Long,
                   pause: Int,
                   alone: Boolean,
                   comment: Option[String],
-                  semester: String) {
+                  semester: String) extends Entity[Record] {
   require({
     endTime match {
       case Some(endTime) =>
@@ -61,14 +63,14 @@ case class Record(id: Long,
   def getStudyFormString(): String = {
     form match {
       case Some(form) => form
-      case None       => " - "
+      case None       => "-"
     }
   }
 
   def getCourseString(): String = {
     course match {
       case Some(course) => course
-      case None         => " -"
+      case None         => "-"
     }
   }
 
@@ -91,11 +93,16 @@ case class Record(id: Long,
       s"${getCourseString()}, ${getStudyFormString()}, ${getCommentString()}"
   }
 
+  /**
+   * @inheritdoc
+   * @return Saved instance of T.
+   */
+  @Override
+  override def getEntityClass: Record = this
 }
-object Record extends Entity[Record] {
+object Record extends EntityObjectInterface[Record] {
 
-  val properties: Properties = new Properties()
-  properties.load(new FileInputStream(VPSConfiguration.propertiesPath))
+  val properties: Properties = VPSConfiguration.properties
 
   /*
    * Initialisation of different formats for date and time for the record entity.
@@ -179,7 +186,8 @@ object Record extends Entity[Record] {
    * @param resultSet ResultSet to convert
    * @return List of records
    */
-  override def fromResultSet(resultSet: ResultSet): List[Record] = {
+  @Override
+  override def resultSetToList(resultSet: ResultSet): List[Record] = {
     new Iterator[Record] { // https://stackoverflow.com/questions/9636545/treating-an-sql-resultset-like-a-scala-stream
       def hasNext = resultSet.next()
       def next() = { // here a typecast happens
@@ -191,10 +199,10 @@ object Record extends Entity[Record] {
           .atZone(ZoneId.systemDefault()).toLocalDateTime
         val pause = resultSet.getInt("pause")
         val alone = resultSet.getInt("alone") == 1
-        val comment = resultSet.getString("comment")
+        val comment = if (resultSet.getString("comment") == null) None else Some(resultSet.getString("comment"))
         val id = resultSet.getInt("id").toLong
         val semester = resultSet.getString("semester")
-        Record(id, Some(form), Some(course), startTime, Some(endTime), pause, alone, Some(comment), semester)
+        Record(id, Some(form), Some(course), startTime, Some(endTime), pause, alone, comment, semester)
       }
     }.toList
   }

@@ -4,31 +4,37 @@ import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 
 import de.berlin.vivepassion.VPSConfiguration.properties
-import de.berlin.vivepassion.controller.StatisticsController
+import de.berlin.vivepassion.controller.{EntityController, EntityControllerInterface, StatisticsController}
 import de.berlin.vivepassion.entities.Record
-import de.berlin.vivepassion.io.database.{DBController, DBRepository}
+import de.berlin.vivepassion.io.database.{VPStatsDBController, VPStatsDBRepository}
 import scopt.OptionParser
 
 /**
   * This object is the program entry point and terminal interface.
+  *
+  * @author Sebastian Führ
+ *  @version 0.1
   */
 object VPStats extends App {
 
-  val dbController: DBController = new DBController(properties.getProperty("db_url"))
-  val dbRepository: DBRepository = new DBRepository(dbController)
+  final val versionNumber: String = "0.1"
+
+  val dbController: VPStatsDBController = new VPStatsDBController(properties.getProperty("db_url"))
+  val dbRepository: VPStatsDBRepository = new VPStatsDBRepository(dbController)
   val statsController: StatisticsController = new StatisticsController(dbRepository)
+  final val entityController: EntityControllerInterface = new EntityController(dbRepository)
 
   dbController.createDatabase()
 
   val testTablePath: String = "./src/main/resources/tables/Studiumsorganisation_Semester_3.csv"
 
   val parser = new OptionParser[Config]("vpstat") {
-      head("Vivepassion Statistics", "0.0.1")
+      head("Vivepassion Statistics", versionNumber)
 
       // scopt implemented options
       help("help").text("prints this usage text")
 
-      version("version")
+      version(versionNumber)
 
       note("\nThe program is in analysing mode by default. This means that you'll get\n" +
         " analysed output if a command is invoked. For other functionality please type\n" +
@@ -82,11 +88,11 @@ object VPStats extends App {
             .optional()
             .action((input, config) => config.copy(comment = input))
             .text("optional comment for the study session"),
-          opt[String]("studyForm")
+          opt[String]("studyFormName")
             .optional()
             .action((input, config) => config.copy(semester = input))
-            .text("the studyForm of the study session " +
-              "(if not given, the last studyForm of the last registered studyForm is used)")
+            .text("the studyFormName of the study session " +
+              "(if not given, the last studyFormName of the last registered studyFormName is used)")
         )
 
       cmd("pause")
@@ -107,11 +113,11 @@ object VPStats extends App {
   /** This variable represents the status of the debug mode. If true additional error messages are printed. */
   val debugMode = parser
                 .parse(args, Config()) // enabling/disabling debug mode
-                .getOrElse(throw new Exception("Config file couldn't be read."))
+                .getOrElse(throw new Exception("[EXCEPTION:VPStats] Config file couldn't be read."))
                 .debug
-  if (debugMode) println("Debug mode active")
+  if (debugMode) println("[DEBUG:VPStats] Debug mode active")
 
-  val learnSessions = dbRepository.getRecords()
+  val learnSessions = dbRepository.getRecords
 
   parser.parse(args, Config()) match { // parse the user input
 
@@ -143,9 +149,9 @@ object VPStats extends App {
 
 
     case Some(Config(_, "start", alone, _, form, course, _, startTimeString, _, _, comment, semester)) =>
-      dbRepository.semesterController.createSemesterIfNotExists(semester)
-      dbRepository.studyFormController.createStudyFormIfNotExists(form)
-      dbRepository.courseController.createCourseIfNotExists(course)
+      entityController.saveSemesterIfNotExists(semester)
+      entityController.saveStudyFormIfNotExists(form)
+      entityController.saveCourseIfNotExists(course)
       val startTime: LocalDateTime = if (startTimeString == "") LocalDateTime.now()
       else LocalDateTime.parse(startTimeString, Record.dateTimeFormatter)
       val newRecord = Record(-1,
@@ -162,13 +168,13 @@ object VPStats extends App {
 
 
     case Some(Config(_, "pause", _, _, _, _, _,_, _, _, _, _)) =>
-      val tmpRec = dbRepository.getLastRecord()
+      val tmpRec = dbRepository.getLastRecord
       dbRepository.saveRecord(Record(tmpRec.id, tmpRec.form, tmpRec.course, tmpRec.startTime,
         Some(LocalDateTime.now()), tmpRec.pause, tmpRec.alone, tmpRec.comment, tmpRec.semester))
 
 
     case Some(Config(_, "resume", _, _, _, _, _, _, _, _, _, _)) =>
-      val tmpRec = dbRepository.getLastRecord()
+      val tmpRec = dbRepository.getLastRecord
       tmpRec.endTime match {
         case Some(endTime) =>
           val pauseTime = endTime.until(LocalDateTime.now(), ChronoUnit.MILLIS).toInt
@@ -181,7 +187,7 @@ object VPStats extends App {
 
 
     case Some(Config(_, "stop", _, _, _ , _, _, _, _, _, _, _)) =>
-      val tmpRec = dbRepository.getLastRecord()
+      val tmpRec = dbRepository.getLastRecord
       val newRecord = Record(tmpRec.id, tmpRec.form, tmpRec.course, tmpRec.startTime,
         Some(LocalDateTime.now()), tmpRec.pause, tmpRec.alone, tmpRec.comment, tmpRec.semester)
       dbRepository.saveRecord(newRecord)
@@ -189,5 +195,5 @@ object VPStats extends App {
 
 
     case _ => println("Command not known.")
-  }
+  } // ----- End of parser.parse( ... )
 }

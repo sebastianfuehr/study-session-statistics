@@ -16,11 +16,11 @@ class DbRepositoryRecordTest extends VPStatSpec with BeforeAndAfterAll {
 
 
   "The DBRepository" should "retrieve the start time of a record correctly" in {
-    assert(dbTestRepository.getRecords().head.startTime === LocalDateTime.parse("2007-03-12T16:45"))
+    assert(dbTestRepository.getRecords.head.startTime === LocalDateTime.parse("2007-03-12T16:45"))
   }
 
   it should "retrieve the end time of a record correctly" in {
-    assert(dbTestRepository.getRecords().head.endTime === Some(LocalDateTime.parse("2007-03-12T17:10")))
+    assert(dbTestRepository.getRecords.head.endTime === Some(LocalDateTime.parse("2007-03-12T17:10")))
   }
 
 

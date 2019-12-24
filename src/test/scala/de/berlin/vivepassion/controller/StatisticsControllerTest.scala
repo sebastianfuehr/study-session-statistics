@@ -1,5 +1,6 @@
 package de.berlin.vivepassion.controller
 
+import de.berlin.vivepassion.io.CSVFileLoader
 import de.berlin.vivepassion.testspecs.VPStatSpec
 import org.scalatest.BeforeAndAfterAll
 
@@ -7,7 +8,7 @@ class StatisticsControllerTest extends VPStatSpec with BeforeAndAfterAll {
 
   override def beforeAll() {
     dbTestController.clearAllTables()
-    dbTestRepository.importCsvIntoDatabase(testProperties.getProperty("test_csv_table_path"), "WS18/19")
+    CSVFileLoader.importCsvIntoDatabase(testProperties.getProperty("test_csv_table_path"), dbTestEntityController)
   }
 
 

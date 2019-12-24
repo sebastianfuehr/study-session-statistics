@@ -66,6 +66,24 @@ class RecordTests extends VPStatSpec {
     assert(record.toString == "[0] 12.03.2007 - 15:30 to 16:15 | 38 min (- 7 min) | alone, Prog2, Doing homework, -")
   }
 
+  it should "return ' -' when comment is None" in {
+    val record = Record(0, Some("Doing homework"), Some("Prog2"), LocalDateTime.parse("2007-03-12T16:00"),
+      Some(LocalDateTime.parse("2007-03-12T16:00")), 0, alone = true, None, "SS19")
+    assert(record.getCommentString() === "-")
+  }
+
+  it should "return ' -' when study form is None" in {
+    val record = Record(0, None, Some("Prog2"), LocalDateTime.parse("2007-03-12T16:00"),
+      Some(LocalDateTime.parse("2007-03-12T16:00")), 0, alone = true, Some("commenting..."), "SS19")
+    assert(record.getStudyFormString() === "-")
+  }
+
+  it should "return ' -' when course is None" in {
+    val record = Record(0, Some("Doing homework"), None, LocalDateTime.parse("2007-03-12T16:00"),
+      Some(LocalDateTime.parse("2007-03-12T16:00")), 0, alone = true, Some("commenting..."), "SS19")
+    assert(record.getCourseString() === "-")
+  }
+
 
 
   "A record companion object" should "generate a record instance from a string" in {

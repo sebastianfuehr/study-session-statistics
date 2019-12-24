@@ -4,15 +4,21 @@ import java.io.FileInputStream
 import java.time.format.DateTimeFormatter
 import java.util.Properties
 
+/**
+ * Holds static information for the application. E.g. paths for files.
+ *
+ * @author Sebastian Führ
+ * @version 0.1
+ */
 object VPSConfiguration {
 
   /** Path of the 'vivepassionstats.properties' file. */
-  val propertiesPath = "./src/main/resources/vivepassionstats.properties"
+  private val propertiesPath: String = "./src/main/resources/vivepassionstats.properties"
   val properties: Properties = new Properties()
   properties.load(new FileInputStream(propertiesPath))
 
   /** Path of the language properties files. */
-  val langPath = "./src/main/resources/lang/vivepassionstats." +
+  private val langPath: String = "./src/main/resources/lang/vivepassionstats." +
       properties.getProperty("language") + ".properties"
   val langProps: Properties = new Properties()
   langProps.load(new FileInputStream(langPath))
@@ -29,7 +35,7 @@ object VPSConfiguration {
   /**
     * Prints all options of the "vivepassionstats.properties" file on the console.
     */
-  def printApplicationProperties: Unit = {
+  def printApplicationProperties(): Unit = {
     val props = new Properties()
     props.load(new FileInputStream(propertiesPath))
     props.forEach((k, v) => println(k+":\t"+v))

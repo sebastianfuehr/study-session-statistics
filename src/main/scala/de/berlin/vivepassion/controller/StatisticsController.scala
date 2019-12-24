@@ -2,16 +2,16 @@ package de.berlin.vivepassion.controller
 
 import java.time.LocalDate
 
-import de.berlin.vivepassion.io.database.DBRepository
+import de.berlin.vivepassion.io.database.{VPStatsDBRepository}
 
-class StatisticsController(dbRepository: DBRepository) {
+class StatisticsController(dbRepository: VPStatsDBRepository) {
 
   /**
     * Prints all statistics which the StatisticsController can calculate.
     */
   def printAllStats(): Unit = {
     println("---------------------------------------------------------------------------------------------")
-    val temp = dbRepository.getRecords()
+    val temp = dbRepository.getRecords
 
     println("Complete learning time: "
       + BigDecimal(temp.foldLeft(0)((acc, r) => acc + r.getSessionLength.toInt) / 60.0)
@@ -43,7 +43,7 @@ class StatisticsController(dbRepository: DBRepository) {
     * @return Double value which represents the average learning time per day.
     */
   def getAverageLearningTime(): Double = {
-    val list = dbRepository.getRecords()
+    val list = dbRepository.getRecords
     val result = list.groupBy(r => r.getDate)
       .foldLeft(0)(
         (acc, r) => acc + r._2.foldLeft(0)((acc, r2) => acc + r2.getSessionLength)
@@ -59,7 +59,7 @@ class StatisticsController(dbRepository: DBRepository) {
    */
   def getAverageLearningTimeAlone(alone: Boolean): Double = {
     val result = getLearningTimeAlone(alone) * 60
-    val amtDays = dbRepository.getRecords().filter(r => r.alone).groupBy(r => r.getDate).size
+    val amtDays = dbRepository.getRecords.filter(r => r.alone).groupBy(r => r.getDate).size
     result / amtDays
   }
 
@@ -69,7 +69,7 @@ class StatisticsController(dbRepository: DBRepository) {
     * @return Double value which represents either the total learning time alone or in a group.
     */
   def getLearningTimeAlone(alone: Boolean): Double = {
-    val list = dbRepository.getRecords()
+    val list = dbRepository.getRecords
     val result = list
       .filter(r => r.alone == alone)
       .map(r => r.getSessionLength)
@@ -84,7 +84,7 @@ class StatisticsController(dbRepository: DBRepository) {
     * @return
     */
   def getLearningTimeForDate(date: LocalDate): Double = {
-    val list = dbRepository.getRecords()
+    val list = dbRepository.getRecords
     val result = list
       .filter(r => r.getDate.equals(date))
       .map(r => r.getSessionLength)
