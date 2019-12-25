@@ -11,7 +11,7 @@ import java.sql.ResultSet
  * @author Sebastian Führ
  * @version 0.1
  */
-case class Course(id: Long, name: String) extends Entity[Course] { //TODO add ects points, description, professor
+final case class Course(id: Long, name: String) extends Entity[Course] { //TODO add ects points, description, professor
 
   /**
    * @inheritdoc

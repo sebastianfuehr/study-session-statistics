@@ -1,14 +1,25 @@
 package de.berlin.vivepassion.controller
 
 import de.berlin.vivepassion.io.CSVFileLoader
-import de.berlin.vivepassion.testspecs.VPStatSpec
-import org.scalatest.BeforeAndAfterAll
+import de.berlin.vivepassion.testspecs.VPStatTestConfig._
+import org.scalatest.{BeforeAndAfterAll, FlatSpec}
 
-class StatisticsControllerTest extends VPStatSpec with BeforeAndAfterAll {
+/**
+ * A test class for testing the functionality of the class StatisticsController
+ *
+ * @note The class depends on functioning methods of other classes.
+ *
+ * @see CSVFileLoader#importCsvIntoDatabase
+ * @see VPStatsDBController#clearAllTables
+ *
+ * @author Sebastian Führ
+ * @version 0.1
+ */
+class StatisticsControllerTest extends FlatSpec with BeforeAndAfterAll {
 
   override def beforeAll() {
     dbTestController.clearAllTables()
-    CSVFileLoader.importCsvIntoDatabase(testProperties.getProperty("test_csv_table_path"), dbTestEntityController)
+    CSVFileLoader.importCsvIntoDatabase(testCsvFilePath, dbTestEntityController)
   }
 
 
@@ -21,7 +32,7 @@ class StatisticsControllerTest extends VPStatSpec with BeforeAndAfterAll {
   it should "calculate the average learning time per day" in {
     val statsTestController = new StatisticsController(dbTestRepository)
     val result = BigDecimal(
-      statsTestController.getAverageLearningTime()
+      statsTestController.getAverageLearningTime
     ).setScale(2, BigDecimal.RoundingMode.HALF_UP).toDouble
     assert(result === 59.33)
   }
@@ -35,7 +46,7 @@ class StatisticsControllerTest extends VPStatSpec with BeforeAndAfterAll {
   }
 
 
-  override def afterAll() = dbTestController.clearAllTables()
 
+  override def afterAll(): Unit = dbTestController.clearAllTables()
 
 }

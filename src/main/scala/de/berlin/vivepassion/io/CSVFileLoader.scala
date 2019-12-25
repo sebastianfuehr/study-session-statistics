@@ -7,7 +7,7 @@ import de.berlin.vivepassion.entities.{Record, Semester}
 import scala.collection.mutable.ListBuffer
 
 /**
- * Control object to read the contents of a csv file and parse them to study sessions.
+ * Controller object to read the contents of a csv file and parse them to study sessions.
  *
  * @author Sebastian Führ
  * @version 0.1
@@ -28,11 +28,16 @@ object CSVFileLoader extends CSVFileLoaderInterface {
   } // ----- End of getListOfCSVFile
 
   /**
-   * TODO Fill
-   * @param csvPath
-   * @param entityController
-   * @return
+   * @inheritdoc
+   *
+   * @param csvPath Path of the csv file to be imported.
+   * @param entityController TODO
+   * @return Boolean if the operation was successful.
+   *
    * @see EntityControllerInterface#saveSemesterIfNotExists(semester: Semester)
+   * @see EntityControllerInterface#saveCourseIfNotExists(courseName: String)
+   * @see EntityControllerInterface#saveStudyFormIfNotExists(studyFormName: String)
+   * @see EntityControllerInterface#saveRecordIfNotExists(record: Record)
    */
   @Override
   override def importCsvIntoDatabase(csvPath: String, entityController: EntityControllerInterface): Boolean = {

@@ -2,15 +2,47 @@ package de.berlin.vivepassion.entities
 
 import java.time.{LocalDate, LocalDateTime}
 
-import de.berlin.vivepassion.testspecs.VPStatSpec
+import de.berlin.vivepassion.testspecs.VPStatTestConfig._
+import org.scalatest.{DoNotDiscover, FlatSpec}
 
-class RecordTests extends VPStatSpec {
+/**
+ * A test class for testing the functionality of the entity class Record.
+ *
+ * @author Sebastian Führ
+ * @version 0.1
+ */
+@DoNotDiscover
+class RecordTests extends FlatSpec {
 
-  val record = Record(0, Some("Doing homework"),
+  val record: Record = Record(0, Some("Doing homework"),
                         Some("Prog2"),
                         LocalDateTime.parse("2007-03-12T15:30:00"),
                         Some(LocalDateTime.parse("2007-03-12T16:15:00")),
                         7, alone = true, None, "SS19")
+
+
+
+  "A record companion object" should "generate a record instance from a string" in {
+    val temp = Record.fromLine("12.03.2007,15:30,16:15,7,Doing homework,alone,Prog2,", 0)
+    assert(record == temp)
+  }
+
+  ignore should "not generate a record instance from a false string" in {
+
+  }
+
+  it should "convert a sql result set into a List[Record]" in {
+    val tmpList: List[Record] = Record.resultSetToList(dbTestRepository.queryTableFor("STUDY_SESSION", "*"))
+    assert(tmpList.length == 1)
+  }
+
+  it should "convert an 'isAlone' key word into a boolean" in {
+    assert (
+      Record.getIsAloneBoolean("alone", "alone")
+        && !Record.getIsAloneBoolean("group", "alone")
+    )
+  }
+
 
 
   "A record" should "return a date as a string in the right format" in {
@@ -69,26 +101,19 @@ class RecordTests extends VPStatSpec {
   it should "return ' -' when comment is None" in {
     val record = Record(0, Some("Doing homework"), Some("Prog2"), LocalDateTime.parse("2007-03-12T16:00"),
       Some(LocalDateTime.parse("2007-03-12T16:00")), 0, alone = true, None, "SS19")
-    assert(record.getCommentString() === "-")
+    assert(record.getCommentString === "-")
   }
 
   it should "return ' -' when study form is None" in {
     val record = Record(0, None, Some("Prog2"), LocalDateTime.parse("2007-03-12T16:00"),
       Some(LocalDateTime.parse("2007-03-12T16:00")), 0, alone = true, Some("commenting..."), "SS19")
-    assert(record.getStudyFormString() === "-")
+    assert(record.getStudyFormString === "-")
   }
 
   it should "return ' -' when course is None" in {
     val record = Record(0, Some("Doing homework"), None, LocalDateTime.parse("2007-03-12T16:00"),
       Some(LocalDateTime.parse("2007-03-12T16:00")), 0, alone = true, Some("commenting..."), "SS19")
-    assert(record.getCourseString() === "-")
-  }
-
-
-
-  "A record companion object" should "generate a record instance from a string" in {
-    val temp = Record.fromLine("12.03.2007,15:30,16:15,7,Doing homework,alone,Prog2,", 0)
-    assert(record == temp)
+    assert(record.getCourseString === "-")
   }
 
 }

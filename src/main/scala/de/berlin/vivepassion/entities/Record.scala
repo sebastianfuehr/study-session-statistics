@@ -4,7 +4,6 @@ import java.sql.ResultSet
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.time.{Instant, LocalDate, LocalDateTime, ZoneId}
-import java.util.Properties
 
 import de.berlin.vivepassion.io.CSVLearnSessionFormat
 import de.berlin.vivepassion.{VPSConfiguration, VPStats}
@@ -23,7 +22,7 @@ import de.berlin.vivepassion.{VPSConfiguration, VPStats}
   * @author Sebastian Führ
   * @version 0.1
   */
-case class Record(id: Long,
+final case class Record(id: Long,
                   form: Option[String],
                   course: Option[String],
                   startTime: LocalDateTime,
@@ -41,13 +40,16 @@ case class Record(id: Long,
     }
   }, "An end time can't be before start time!")
 
-  /**
-    * @return The date of the learn session.
-    */
+  /** @return The date of the learn session. */
   def getDate: LocalDate = startTime.toLocalDate
+
+  /** @return String representation of the date of the study session. */
   def getDateString: String = startTime.format(Record.dateFormatter)
 
+  /** @return String representation of the start time. */
   def getStartTimeString: String = startTime.format(Record.timeFormatter)
+
+  /** @return String representation of the end time. */
   def getEndTimeString: String = endTime match {
     case Some(endTime) => endTime.format(Record.timeFormatter)
     case None          => " - "
@@ -83,7 +85,7 @@ case class Record(id: Long,
       case None          => // session length until now
         (startTime.until(LocalDateTime.now(), ChronoUnit.MINUTES) - pause).toInt
     }
-  }
+  } // ----- End of getSessionLength
 
   /** @return Returns a string representation of the study session. */
   @Override
@@ -93,7 +95,7 @@ case class Record(id: Long,
       s"${if (alone) VPSConfiguration.langProps.getProperty("alone")
       else VPSConfiguration.langProps.getProperty("group")}, " +
       s"$getCourseString, $getStudyFormString, $getCommentString"
-  }
+  } // ----- End of toString
 
   /**
    * @inheritdoc
@@ -105,13 +107,11 @@ case class Record(id: Long,
 }
 object Record extends EntityObjectInterface[Record] {
 
-  val properties: Properties = VPSConfiguration.properties
-
   /*
    * Initialisation of different formats for date and time for the record entity.
    */
-  val timeFormatStr: String = properties.getProperty("default_time_format")
-  val dateFormatStr: String = properties.getProperty("default_date_format")
+  val timeFormatStr: String = VPSConfiguration.properties.getProperty("default_time_format")
+  val dateFormatStr: String = VPSConfiguration.properties.getProperty("default_date_format")
   val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern(dateFormatStr)
   val timeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern(timeFormatStr)
   val dateTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern(
@@ -126,13 +126,13 @@ object Record extends EntityObjectInterface[Record] {
     */
   def fromLine(line: String, id: Long): Record = {
     val defaultDateTimeFormat = (
-        properties.getProperty("default_date_format")
+        VPSConfiguration.properties.getProperty("default_date_format")
         +"'T'"
-        +properties.getProperty("default_time_format")
+        +VPSConfiguration.properties.getProperty("default_time_format")
       )
     val defaultCSVLearnSessionFileFormat = new CSVLearnSessionFormat(',')
     fromLine(line, defaultDateTimeFormat, defaultCSVLearnSessionFileFormat, id)
-  }
+  } // ----- End of fromLine
 
   /**
     *
@@ -162,7 +162,7 @@ object Record extends EntityObjectInterface[Record] {
       if (recordString(csv.commentColumn).isEmpty) None
       else Some(recordString(csv.commentColumn))
 
-    val semester: String = properties.getProperty("current_semester")
+    val semester: String = VPSConfiguration.properties.getProperty("current_semester")
 
     Record(id,
       Some(recordString(csv.formColumn)),
@@ -173,7 +173,7 @@ object Record extends EntityObjectInterface[Record] {
       isAlone,
       comment,
       semester)
-  }
+  } // ----- End of fromLine
 
   /**
     * Compares the given String with the keyword which represents the keyword which was used in the csv table in the
@@ -209,6 +209,6 @@ object Record extends EntityObjectInterface[Record] {
         Record(id, Some(form), Some(course), startTime, Some(endTime), pause, alone, comment, semester)
       }
     }.toList
-  }
+  } // ----- End of resultSetToList
 
 }

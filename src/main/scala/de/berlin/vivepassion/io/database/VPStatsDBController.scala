@@ -10,7 +10,7 @@ package de.berlin.vivepassion.io.database
  * @author Sebastian Führ
  * @define tableNames COURSE, STUDY_FORM, SEMESTER, STUDY_DAY, STUDY_SESSION
  */
-class VPStatsDBController(dbUrl: String) extends DBController(dbUrl) {
+final class VPStatsDBController(dbUrl: String) extends DBController(dbUrl) {
 
   /**
    * Creates the tables $tableNames for the local database if they don't already exist.
@@ -66,8 +66,8 @@ class VPStatsDBController(dbUrl: String) extends DBController(dbUrl) {
     createTable("SEMESTER",
       "ID INTEGER PRIMARY KEY, \n" +
       "SEMESTER_NAME TEXT NOT NULL, \n" +
-      "START_DATE INTEGER NOT NULL, \n" +
-      "END_DATE INTEGER NOT NULL, \n" +
+      "START_DATE INTEGER, \n" +
+      "END_DATE INTEGER, \n" +
       "CONSTRAINT unique_SEMESTER_NAME UNIQUE (SEMESTER_NAME), \n" +
       "CONSTRAINT unique_START_DATE UNIQUE (START_DATE), \n" +
       "CONSTRAINT unique_END_DATE UNIQUE (END_DATE)")

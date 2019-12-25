@@ -21,6 +21,7 @@ trait CSVFileLoaderInterface {
   /**
    * Read all lines of a csv file and save then one by one in a database.
    * @param csvPath Path of the csv file to be imported.
+   * @param entityController TODO
    * @return Boolean if the operation was successful.
    */
   def importCsvIntoDatabase(csvPath: String, entityController: EntityControllerInterface): Boolean

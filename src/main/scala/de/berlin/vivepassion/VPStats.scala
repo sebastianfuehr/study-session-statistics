@@ -108,7 +108,11 @@ object VPStats extends App {
         .text("stop the current study session.\n " +
           "The application will ask for the form of learning and the course.")
 
-  }
+      cmd("reset")
+        .action((_, config) => config.copy(mode = "reset"))
+        .text("reset the local database ")
+
+  } // ----- End of new OptionParser[Config]("vpstat") { ...
 
   /** This variable represents the status of the debug mode. If true additional error messages are printed. */
   val debugMode = parser
@@ -127,6 +131,7 @@ object VPStats extends App {
           println(s"Learn time ${if (aloneBoolean) "alone" else "in a group"}: " +
             s"${statsController.getLearningTimeAlone(aloneBoolean)} h")
       }
+
 
 
     case config@Some(Config(_, "list", _, _, _ , _, _, _, _, _, _, _)) =>       // list tables mode
@@ -148,6 +153,7 @@ object VPStats extends App {
       }
 
 
+
     case Some(Config(_, "start", alone, _, form, course, _, startTimeString, _, _, comment, semester)) =>
       entityController.saveSemesterIfNotExists(semester)
       entityController.saveStudyFormIfNotExists(form)
@@ -167,10 +173,12 @@ object VPStats extends App {
       println(s"Study session started at ${newRecord.getStartTimeString}")
 
 
+
     case Some(Config(_, "pause", _, _, _, _, _,_, _, _, _, _)) =>
       val tmpRec = dbRepository.getLastRecord
       dbRepository.saveRecord(Record(tmpRec.id, tmpRec.form, tmpRec.course, tmpRec.startTime,
         Some(LocalDateTime.now()), tmpRec.pause, tmpRec.alone, tmpRec.comment, tmpRec.semester))
+
 
 
     case Some(Config(_, "resume", _, _, _, _, _, _, _, _, _, _)) =>
@@ -194,6 +202,13 @@ object VPStats extends App {
       println(s"Record saved: $newRecord")
 
 
+
+    case Some(Config(_, "reset", _, _, _ , _, _, _, _, _, _, _)) =>
+      dbController.deleteAllTables()
+
+
+
     case _ => println("Command not known.")
   } // ----- End of parser.parse( ... )
+
 }

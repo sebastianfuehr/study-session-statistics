@@ -89,7 +89,7 @@ class EntityController(dbRepository: VPStatsDBRepository) extends EntityControll
       dbRepository.saveStudyDay(StudyDay.makeStudyDay(studyDayString))
       true
     } else false
-  }
+  } // ----- End of saveStudyDayIfNotExists
 
   /**
    * @inheritdoc

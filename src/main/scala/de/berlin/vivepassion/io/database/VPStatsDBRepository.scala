@@ -79,7 +79,7 @@ class VPStatsDBRepository(dbController: DBControllerInterface) extends DBReposit
       def hasNext = resultSet.next()
       def next() = resultSet.getString(1)
     }.toList
-  }
+  } // ----- End of getNamesFrom
 
   // saving entities in the database methods -----------------------------------------------
   /**
@@ -91,7 +91,7 @@ class VPStatsDBRepository(dbController: DBControllerInterface) extends DBReposit
     val prpstmt = dbController.connect().prepareStatement(sqlStatement)
     prpstmt.setString(1, form)
     prpstmt.executeUpdate
-  }
+  } // ----- End of saveStudyForm
 
   /**
    * Saves the course into the course database table.
@@ -102,7 +102,7 @@ class VPStatsDBRepository(dbController: DBControllerInterface) extends DBReposit
     val prpstmt = dbController.connect().prepareStatement(sqlStatement)
     prpstmt.setString(1, course)
     prpstmt.executeUpdate
-  }
+  } // ----- End of saveCourse
 
   /**
    * Saves the semester into the SEMESTER database table.
@@ -112,10 +112,15 @@ class VPStatsDBRepository(dbController: DBControllerInterface) extends DBReposit
     val sqlStatement = "INSERT INTO SEMESTER (semester_name, start_date, end_date) VALUES(?, ? ,?)"
     val prpstmt = dbController.connect().prepareStatement(sqlStatement)
     prpstmt.setString(1, semester.name)
-    prpstmt.setDate(2, Date.valueOf(semester.start))
-    prpstmt.setDate(3, Date.valueOf(semester.end))
+
+    if (semester.start == null) prpstmt.setNull(2, java.sql.Types.DATE)
+    else prpstmt.setDate(2, Date.valueOf(semester.start))
+
+    if (semester.end == null) prpstmt.setNull(3, java.sql.Types.DATE)
+    else prpstmt.setDate(3, Date.valueOf(semester.end))
+
     prpstmt.executeUpdate
-  }
+  } // ----- End of saveSemester
 
   /**
    * Saves the study day into the study_day database table.
@@ -128,13 +133,16 @@ class VPStatsDBRepository(dbController: DBControllerInterface) extends DBReposit
     prpstmt.setInt(2, studyDay.plannedStudyTime)
     prpstmt.setString(3, studyDay.comment)
     prpstmt.execute()
-  }
+  } // ----- End of saveStudyDay
 
   /**
    * Saves the study session into the record database table.
+   *
+   * @note Method doesn't check if the referenced foreign keys exist.
+   *
    * @param record Record entity to be saved.
    */
-  def saveRecord(record: Record): Unit = {
+  def saveRecord(record: Record): Boolean = {
     println(s"Save study session in DB: $record")
     val sqlStatement = "INSERT INTO STUDY_SESSION(" +
       "study_day, form, course, start_time, end_time, pause, alone, comment, semester" +
@@ -170,11 +178,16 @@ class VPStatsDBRepository(dbController: DBControllerInterface) extends DBReposit
 
     prpstmt.setString(9, record.semester)
     prpstmt.execute()
-  }
 
+    true
+  } // ----- End of saveRecord
+
+  /**
+   * @return Most recent study session in the table STUDY_SESSION.
+   */
   def getLastRecord: Record = {
-    val sqlStatement = "id, form, course, start_time, end_time, pause, alone, comment, SEMESTER"
-    val resultList = Record.resultSetToList(queryTableFor("RECORD", sqlStatement))
+    val sqlStatement = "ID, FORM, COURSE, START_TIME, END_TIME, PAUSE, ALONE, COMMENT, SEMESTER"
+    val resultList = Record.resultSetToList(queryTableFor("STUDY_SESSION", sqlStatement))
     resultList.reduce((acc, elem) => if (elem.startTime.isAfter(acc.startTime)) elem else acc)
   }
 

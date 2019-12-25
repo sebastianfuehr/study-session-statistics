@@ -2,23 +2,20 @@ package de.berlin.vivepassion.testspecs
 
 import de.berlin.vivepassion.controller.{EntityController, EntityControllerInterface}
 import de.berlin.vivepassion.io.database.{VPStatsDBController, VPStatsDBRepository}
-import org.scalatest.{BeforeAndAfterAll, FlatSpec}
 
 /**
- * Trait which provides essential fields for all test classes.
+ * Object which provides essential fields for all test classes.
  *
  * @author Sebastian Führ
  * @version 0.1
  */
-trait VPStatSpec extends FlatSpec with BeforeAndAfterAll {
+object VPStatTestConfig {
 
-  val dbTestController: VPStatsDBController =
-    new VPStatsDBController("jdbc:sqlite:src/test/resources/vpstats_test_db")
+  private val testDBPath: String = "jdbc:sqlite:src/test/resources/vpstats_test_db"
+  val testCsvFilePath: String = "./src/main/resources/tables/Test_Semester_Table.csv"
+
+  val dbTestController: VPStatsDBController = new VPStatsDBController(testDBPath)
   val dbTestRepository: VPStatsDBRepository = new VPStatsDBRepository(dbTestController)
   val dbTestEntityController: EntityControllerInterface = new EntityController(dbTestRepository)
-
-  dbTestController.deleteAllTables()
-  dbTestController.createDatabase()
-  dbTestController.clearAllTables()
 
 }

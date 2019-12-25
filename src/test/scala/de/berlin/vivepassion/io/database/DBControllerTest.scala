@@ -4,8 +4,15 @@ import java.time.{LocalDate, LocalDateTime}
 
 import de.berlin.vivepassion.entities.{Record, Semester, StudyDay}
 import de.berlin.vivepassion.testspecs.VPStatSpec
+import org.scalatest.BeforeAndAfterAll
 
-class DBControllerTest extends VPStatSpec {
+/**
+ * A test class for testing the functionality of the class VPStatsDBController
+ *
+ * @author Sebastian Führ
+ * @version 0.1
+ */
+class DBControllerTest extends VPStatSpec with BeforeAndAfterAll {
 
 
   "The database" should "contain one course after the course table was created and filled" in {
@@ -51,6 +58,7 @@ class DBControllerTest extends VPStatSpec {
   }
 
 
-  dbTestController.clearAllTables()
+
+  override def afterAll(): Unit = dbTestController.clearAllTables()
 
 }

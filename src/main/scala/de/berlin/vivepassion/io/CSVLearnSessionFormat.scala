@@ -19,7 +19,7 @@ import de.berlin.vivepassion.VPSConfiguration
  * @author Sebastian Führ
  * @version 0.1
  */
-case class CSVLearnSessionFormat(csvSeparator: Char, dateColumn: Int, startTimeColumn: Int, endTimeColumn: Int,
+final case class CSVLearnSessionFormat(csvSeparator: Char, dateColumn: Int, startTimeColumn: Int, endTimeColumn: Int,
                                  pauseColumn: Int, formColumn: Int, aloneColumn: Int, courseColumn: Int,
                                  commentColumn: Int, aloneKeyWord: String) {
 
