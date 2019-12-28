@@ -25,6 +25,8 @@ case class StudyDay(id: Long, date: LocalDate, plannedStudyTime: Int, comment: S
   @Override
   override def getEntityClass: StudyDay = this
 
+  def getDateString: String = date.format(VPSConfiguration.getDateFormatter)
+
 }
 object StudyDay extends EntityObjectInterface[StudyDay] {
 

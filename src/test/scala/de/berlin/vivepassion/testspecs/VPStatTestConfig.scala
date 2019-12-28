@@ -1,6 +1,8 @@
 package de.berlin.vivepassion.testspecs
 
 import de.berlin.vivepassion.controller.{EntityController, EntityControllerInterface}
+import de.berlin.vivepassion.gui.Dialogues
+import de.berlin.vivepassion.io.MockUserInteractionInstance
 import de.berlin.vivepassion.io.database.{VPStatsDBController, VPStatsDBRepository}
 
 /**
@@ -12,10 +14,11 @@ import de.berlin.vivepassion.io.database.{VPStatsDBController, VPStatsDBReposito
 object VPStatTestConfig {
 
   private val testDBPath: String = "jdbc:sqlite:src/test/resources/vpstats_test_db"
-  val testCsvFilePath: String = "./src/main/resources/tables/Test_Semester_Table.csv"
+  val testCsvFilePath: String = "./src/test/resources/Test_Semester_Table.csv"
 
   val dbTestController: VPStatsDBController = new VPStatsDBController(testDBPath)
   val dbTestRepository: VPStatsDBRepository = new VPStatsDBRepository(dbTestController)
-  val dbTestEntityController: EntityControllerInterface = new EntityController(dbTestRepository)
+  val testDialogue: Dialogues = new Dialogues(new MockUserInteractionInstance)
+  val dbTestEntityController: EntityControllerInterface = new EntityController(dbTestRepository, testDialogue)
 
 }

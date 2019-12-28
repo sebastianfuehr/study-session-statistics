@@ -6,6 +6,7 @@ import java.time.temporal.ChronoUnit
 import de.berlin.vivepassion.VPSConfiguration.properties
 import de.berlin.vivepassion.controller.{EntityController, EntityControllerInterface, StatisticsController}
 import de.berlin.vivepassion.entities.Record
+import de.berlin.vivepassion.gui.{Dialogues, UserInteractionInstance}
 import de.berlin.vivepassion.io.database.{VPStatsDBController, VPStatsDBRepository}
 import scopt.OptionParser
 
@@ -22,11 +23,12 @@ object VPStats extends App {
   val dbController: VPStatsDBController = new VPStatsDBController(properties.getProperty("db_url"))
   val dbRepository: VPStatsDBRepository = new VPStatsDBRepository(dbController)
   val statsController: StatisticsController = new StatisticsController(dbRepository)
-  final val entityController: EntityControllerInterface = new EntityController(dbRepository)
+  val dialogues: Dialogues = new Dialogues(new UserInteractionInstance)
+  final val entityController: EntityControllerInterface = new EntityController(dbRepository, dialogues)
 
   dbController.createDatabase()
 
-  val testTablePath: String = "./src/main/resources/tables/Studiumsorganisation_Semester_3.csv"
+  val tmpTestTablePath: String = "./src/main/resources/tables/Studiumsorganisation_Semester_3.csv"
 
   val parser = new OptionParser[Config]("vpstat") {
       head("Vivepassion Statistics", versionNumber)

@@ -43,7 +43,10 @@ class VPStatsDBRepository(dbController: DBControllerInterface) extends DBReposit
    * @return List of strings which hold the study days.
    * @see #getNamesFrom
    */
-  def getStudyDaysAsStrings: List[String] = getNamesFrom("STUDY_DAY", "DATE")
+  def getStudyDaysAsStrings: List[String] = {
+    //getNamesFrom("STUDY_DAY", "DATE").map(r => LocalDate.parse(r, VPSConfiguration.getDateTimeFormatter).toString)
+    getStudyDays.map(sd => sd.getDateString)
+  }
 
   /**
    * Retrieves all persisted forms to study from the database table STUDY_FORM.

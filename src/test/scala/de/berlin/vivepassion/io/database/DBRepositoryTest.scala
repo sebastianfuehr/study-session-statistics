@@ -25,7 +25,7 @@ class DBRepositoryTest extends FlatSpec with BeforeAndAfterAll {
 
   "The DBRepository" should "save all records of a csv file in the database" in {
     CSVFileLoader.importCsvIntoDatabase(testCsvFilePath, dbTestEntityController)
-    // wie testen?
+    // TODO how to test?
   }
 
   it should "retrieve all courses as a list" in {
@@ -44,11 +44,15 @@ class DBRepositoryTest extends FlatSpec with BeforeAndAfterAll {
 
   }
 
+  ignore should "retrieve all study days as a list of strings" in {
+
+  }
+
   it should "retrieve all records as a list" in {
     assert(dbTestRepository.getRecords.length === 6)
   }
 
-  it should "retrieve the last record" in  {
+  it should "retrieve the last testRecord" in  {
     val record = Record(6, Some("doing homework"), Some("LinA"), LocalDateTime.parse("2018-01-06T20:00"),
       Some(LocalDateTime.parse("2018-01-06T21:30")), 10, alone = true, None, "SS19")
     assert(dbTestRepository.getLastRecord === record)

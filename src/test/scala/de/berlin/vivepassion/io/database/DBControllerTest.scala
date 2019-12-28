@@ -40,7 +40,7 @@ class DBControllerTest extends VPStatSpec with BeforeAndAfterAll {
     assert(dbTestRepository.getStudyDays.length == 1)
   }
 
-  it should "test create record database table" in {
+  it should "test create testRecord database table" in {
     dbTestController.createRecordTable()
     dbTestRepository.saveRecord(Record(0, Some("Calculate Problem Sets"),
       Some("Introduction to Programming with Java"), LocalDateTime.parse("2019-10-10T15:00"),

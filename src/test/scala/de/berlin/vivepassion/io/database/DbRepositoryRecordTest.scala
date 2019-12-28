@@ -2,8 +2,8 @@ package de.berlin.vivepassion.io.database
 
 import java.time.LocalDateTime
 
+import de.berlin.vivepassion.testspecs.VPStatTestDB
 import de.berlin.vivepassion.testspecs.VPStatTestConfig._
-import org.scalatest.{DoNotDiscover, FlatSpec}
 
 /**
  * A test class for testing the functionality of the class VPStatsDBRepository.
@@ -13,15 +13,14 @@ import org.scalatest.{DoNotDiscover, FlatSpec}
  * @author Sebastian Führ
  * @version 0.1
  */
-@DoNotDiscover
-class DbRepositoryRecordTest extends FlatSpec {
+class DbRepositoryRecordTest extends VPStatTestDB {
 
-  "The DBRepository" should "retrieve the start time of a record correctly" in {
-    assert(dbTestRepository.getRecords.head.startTime === LocalDateTime.parse("2007-03-12T15:30"))
+  "The DBRepository" should "retrieve the start time of a testRecord correctly" in {
+    assert(dbTestRepository.getLastRecord.startTime === LocalDateTime.parse("2018-01-06T20:00"))
   }
 
-  it should "retrieve the end time of a record correctly" in {
-    assert(dbTestRepository.getRecords.head.endTime === Some(LocalDateTime.parse("2007-03-12T16:15")))
+  it should "retrieve the end time of a testRecord correctly" in {
+    assert(dbTestRepository.getLastRecord.endTime === Some(LocalDateTime.parse("2018-01-06T21:30")))
   }
 
 }

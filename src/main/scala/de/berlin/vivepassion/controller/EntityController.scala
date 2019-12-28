@@ -12,7 +12,7 @@ import de.berlin.vivepassion.io.database.VPStatsDBRepository
  * @author Sebastian Führ
  * @version 0.1
  */
-class EntityController(dbRepository: VPStatsDBRepository) extends EntityControllerInterface {
+class EntityController(dbRepository: VPStatsDBRepository, dialogues: Dialogues) extends EntityControllerInterface {
 
   /**
    * @inheritdoc
@@ -56,7 +56,7 @@ class EntityController(dbRepository: VPStatsDBRepository) extends EntityControll
   override def saveSemesterIfNotExists(semesterName: String): Boolean = {
     if (semesterName != null && !dbRepository.getSemesters.contains(semesterName)) {
       println(s"The semester '$semesterName' was not found. A new one has to be created.")
-      dbRepository.saveSemester(Dialogues.createSemesterDialogue(semesterName))
+      dbRepository.saveSemester(dialogues.createSemesterDialogue(semesterName))
       true
     } else false
   } // ----- End of saveSemesterIfNotExists

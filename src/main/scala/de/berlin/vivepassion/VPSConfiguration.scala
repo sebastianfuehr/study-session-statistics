@@ -23,6 +23,10 @@ object VPSConfiguration {
   val langProps: Properties = new Properties()
   langProps.load(new FileInputStream(langPath))
 
+  def getDateFormatter: DateTimeFormatter = {
+    DateTimeFormatter.ofPattern(properties.getProperty("default_date_format"))
+  }
+
   // TODO implement method to have centralized scope of date time format
   def getDateTimeFormatter: DateTimeFormatter = {
     DateTimeFormatter.ofPattern(

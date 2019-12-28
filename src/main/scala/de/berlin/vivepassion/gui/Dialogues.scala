@@ -6,16 +6,14 @@ import java.time.format.DateTimeFormatter
 import de.berlin.vivepassion.VPSConfiguration
 import de.berlin.vivepassion.entities.Semester
 
-import scala.io.StdIn
-
 /**
- * Singleton which provides dialogues to interact with the user to support the
+ * Class which provides dialogues to interact with the user to support the
  * creation of new entities for the database.
  *
  * @author Sebastian Führ
  * @version 0.1
  */
-object Dialogues {
+class Dialogues(io: UserInteractionInstance) {
 
   /**
    * Dialogue which prompts the user to provide data for the creation of a
@@ -24,8 +22,8 @@ object Dialogues {
    * @return New Semester with the attributes specified by the user.
    */
   def createSemesterDialogue(name: String): Semester = {
-    val startDateStr = StdIn.readLine("Which date is the first day of the semesterName?")
-    val endDateStr = StdIn.readLine("Which is the last day?")
+    val startDateStr = io.readUserInputLine("Which date is the first day of the semester?")
+    val endDateStr = io.readUserInputLine("Which is the last day?")
 
     val dateFormatStr: String = VPSConfiguration.properties.getProperty("default_date_format")
     val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern(dateFormatStr)

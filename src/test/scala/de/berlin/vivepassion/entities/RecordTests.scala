@@ -3,7 +3,7 @@ package de.berlin.vivepassion.entities
 import java.time.{LocalDate, LocalDateTime}
 
 import de.berlin.vivepassion.testspecs.VPStatTestConfig._
-import org.scalatest.{DoNotDiscover, FlatSpec}
+import org.scalatest.{BeforeAndAfterAll, DoNotDiscover, FlatSpec}
 
 /**
  * A test class for testing the functionality of the entity class Record.
@@ -12,22 +12,32 @@ import org.scalatest.{DoNotDiscover, FlatSpec}
  * @version 0.1
  */
 @DoNotDiscover
-class RecordTests extends FlatSpec {
+class RecordTests extends FlatSpec with BeforeAndAfterAll {
 
-  val record: Record = Record(0, Some("Doing homework"),
+  val testRecord: Record = Record(0, Some("Doing homework"),
                         Some("Prog2"),
                         LocalDateTime.parse("2007-03-12T15:30:00"),
                         Some(LocalDateTime.parse("2007-03-12T16:15:00")),
                         7, alone = true, None, "SS19")
 
-
-
-  "A record companion object" should "generate a record instance from a string" in {
-    val temp = Record.fromLine("12.03.2007,15:30,16:15,7,Doing homework,alone,Prog2,", 0)
-    assert(record == temp)
+  override def beforeAll(): Unit = {
+    dbTestController.createDatabase()
+    dbTestController.clearAllTables()
+    dbTestRepository.saveSemester(Semester("SS19"))
+    dbTestRepository.saveStudyDay(StudyDay.makeStudyDay("12.03.2007"))
+    dbTestRepository.saveStudyForm("Doing homework")
+    dbTestRepository.saveCourse("ProgC")
+    dbTestRepository.saveRecord(testRecord)
   }
 
-  ignore should "not generate a record instance from a false string" in {
+
+
+  "A testRecord companion object" should "generate a testRecord instance from a string" in {
+    val temp = Record.fromLine("12.03.2007,15:30,16:15,7,Doing homework,alone,Prog2,", 0)
+    assert(testRecord == temp)
+  }
+
+  ignore should "not generate a testRecord instance from a false string" in {
 
   }
 
@@ -45,8 +55,8 @@ class RecordTests extends FlatSpec {
 
 
 
-  "A record" should "return a date as a string in the right format" in {
-    assert(record.getDate == LocalDate.parse("2007-03-12"))
+  "A testRecord" should "return a date as a string in the right format" in {
+    assert(testRecord.getDate == LocalDate.parse("2007-03-12"))
   }
 
   it should "calculate the right session lengths" in {
@@ -95,7 +105,7 @@ class RecordTests extends FlatSpec {
   }
 
   it should "have a toString() method which returns a string in the right format" in {
-    assert(record.toString == "[0] 12.03.2007 - 15:30 to 16:15 | 38 min (- 7 min) | alone, Prog2, Doing homework, -")
+    assert(testRecord.toString == "[0] 12.03.2007 - 15:30 to 16:15 | 38 min (- 7 min) | alone, Prog2, Doing homework, -")
   }
 
   it should "return ' -' when comment is None" in {
@@ -114,6 +124,12 @@ class RecordTests extends FlatSpec {
     val record = Record(0, Some("Doing homework"), None, LocalDateTime.parse("2007-03-12T16:00"),
       Some(LocalDateTime.parse("2007-03-12T16:00")), 0, alone = true, Some("commenting..."), "SS19")
     assert(record.getCourseString === "-")
+  }
+
+
+
+  override def afterAll(): Unit = {
+    dbTestController.deleteDatabase()
   }
 
 }

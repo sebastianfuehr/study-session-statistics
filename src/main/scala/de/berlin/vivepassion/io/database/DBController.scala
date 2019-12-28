@@ -32,11 +32,12 @@ abstract class DBController(dbUrl: String) extends DBControllerInterface {
 
   @Override
   override def deleteTable(tableName: String): Boolean = {
-    connect().createStatement.execute(s"DROP TABLE $tableName") // TODO insert parenthesises after createStatement method
+    connect().createStatement.execute(s"DROP TABLE IF EXISTS $tableName") // TODO insert parenthesises after createStatement method
   }
 
   @Override
   override def deleteDatabase(): Boolean = { // TODO implement me
+    deleteAllTables()
     false
   }
 
